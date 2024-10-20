@@ -1,17 +1,23 @@
 /* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 body {
   font-family: Arial, sans-serif;
 }
 
 header {
-  background-color: #333;
+  background-color: #bd2222;
   padding: 1rem;
 }
 
 header nav ul {
   list-style: none;
   display: flex;
-  gap: 1rem;
+  gap: 5rem;
+  
 }
 
 header nav ul li {
