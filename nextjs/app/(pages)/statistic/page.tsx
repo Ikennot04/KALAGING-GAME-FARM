@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import Image from 'next/image';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -142,8 +143,17 @@ function Statistics() {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-green-200 py-10 px-4">
+      <Image 
+            src="/MONEYKEN.gif" // Path to your GIF
+            alt="Triangle Animation"
+            width={200} // Set your desired width
+            height={100} // Set your desired height
+            className="rounded" // Optional: Add rounded corners to the GIF
+          />
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">Statistics</h1>
+        
+        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600" >Statistics</h1>
+        
 
         {/* Flexbox Container for Charts */}
         <div className="flex flex-col md:flex-row justify-between gap-6">

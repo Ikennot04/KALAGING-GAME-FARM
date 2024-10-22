@@ -1,4 +1,3 @@
-'use client'
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -10,25 +9,17 @@ const images = [
 ];
 
 const workers = [
-    { src: '/worker1.jpg', name: 'ENGR. JUNARD A. CAÑETE', role: 'KALAGING GAMEFARM OWNER' },
+    { src: '/root2.jpg', name: 'ENGR. JUNARD A. CAÑETE', role: 'KALAGING GAMEFARM OWNER' },
     { src: '/root.jpg', name: 'ATTY. FAUSTO F. FLORES', role: 'HANDLER/BREEDER - CO-OWNER' },
-    { src: '/branch.jpg', name: 'KIERY A. FLORES, JD', role: 'HANDLER/BREEDER' },
+    { src: '/branch.jpg', name: 'KIERY A. FLORES, J.D.', role: 'HANDLER/BREEDER' },
     { src: '/branch3(2).jpg', name: 'KENT JOHN BRIAN C. FLORES', role: 'TIGPANGAYO UG BAHIN SA DAUG' },
     { src: '/branch2.jpg', name: 'JOHN CARLO C. ROLLON', role: 'TIGPANGAYO GIHAPON UG BAHIN SA DAUG' },
-    // Add more workers as needed
+    { src: '/tito.jpg', name: 'DR. CESAR ROLLON', role: 'TIG TAYHOP SA SAMAD' },
 ];
 
 function AboutUs() {
-    const [currentImage, setCurrentImage] = useState(0);
     const [currentWorker, setCurrentWorker] = useState(0);
-
-    // Automatically switch the background image every 5 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentImage((prevImage) => (prevImage + 1) % images.length);
-        }, 5000); // 5 seconds
-        return () => clearInterval(interval);
-    }, []);
+    const [currentImage, setCurrentImage] = useState(0);
 
     const handleNextWorker = () => {
         setCurrentWorker((prevWorker) => (prevWorker + 1) % workers.length);
@@ -38,58 +29,105 @@ function AboutUs() {
         setCurrentWorker((prevWorker) => (prevWorker - 1 + workers.length) % workers.length);
     };
 
+    // Automatically switch the background image every 5 seconds
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentImage((prevImage) => (prevImage + 1) % images.length);
+        }, 5000); // Change every 5 seconds
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <div className="relative min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${images[currentImage].src})`, transition: 'background-image 1s ease-in-out' }}>
+        <div
+            className="relative min-h-screen bg-cover bg-center"
+            style={{ backgroundImage: `url(${images[currentImage].src})`, transition: 'background-image 1s ease-in-out' }}
+        >
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/40"></div>
 
             {/* Main Content */}
             <div className="relative z-10 flex flex-col items-center justify-center py-10 px-4">
+                
                 {/* First Section: About Us */}
-                <div className="max-w-5xl w-full bg-white/80 p-10 rounded-lg shadow-lg mb-10">
-                    <h1 className="text-5xl font-extrabold mb-8 text-blue-700 text-center">About Us</h1>
-                    <p className="text-xl mb-8 text-gray-800 text-center">
-                        Welcome to <span className="font-bold text-blue-700">KALAGING GAMEFARM</span>! We are passionate about breeding and nurturing high-quality cockfighting birds.
+                <div className="max-w-4xl w-full bg-white/90 p-8 rounded-lg shadow-lg mb-10 transition-transform duration-500 hover:scale-105">
+                    <div className="flex items-center justify-center mb-6">
+                        <Image 
+                            src="/SEKIN.gif" // Path to your GIF
+                            alt="Triangle Animation"
+                            width={200}
+                            height={250}
+                            className="rounded mr-4" 
+                        />
+                    </div>
+                    <p className="text-lg mb-6 text-gray-800 text-center">
+                        Welcome to <span className="font-bold text-blue-600">KALAGING GAMEFARM</span>! We are passionate about breeding and nurturing high-quality cockfighting birds.
                     </p>
-                    <h2 className="text-3xl font-semibold mb-6 text-blue-600 text-center">Our Mission</h2>
-                    <p className="text-lg mb-6 text-gray-700 text-center">
+                    <h2 className="text-3xl font-semibold mb-4 text-blue-600 text-center">Our Mission</h2>
+                    <p className="text-md mb-4 text-gray-700 text-center">
                         Our mission is to create a sustainable and ethical breeding environment, promoting responsible practices while supporting a community of breeders.
                     </p>
                 </div>
-                    {/* Workers Section */}
-                    <div className="max-w-5xl w-full bg-white/80 p-10 rounded-lg shadow-lg text-center">
-                        <h2 className="text-4xl font-bold mb-8 text-blue-700">Meet Our Team</h2>
 
-                        {/* Worker Details Display */}
-                        <div className="flex flex-col items-center mb-8">
+                {/* Workers Section */}
+                <div className="max-w-4xl w-full bg-white/90 p-8 rounded-lg shadow-lg text-center transition-transform duration-500 hover:scale-105">
+                    <h2 className="text-4xl font-bold mb-6 text-blue-800">Meet Our Team</h2>
+
+                    {/* Worker Carousel */}
+                    <div className="flex items-center justify-center space-x-4 mb-6">
+                        {/* Back Button */}
+                        <button
+                            className="text-4xl text-blue-600 hover:text-blue-800 transition-colors duration-200 focus:outline-none transform hover:scale-110"
+                            onClick={handleBackWorker}
+                        >
+                            &lt;
+                        </button>
+
+                        {/* Previous Worker */}
+                        <div className="opacity-70 transition-opacity duration-300 hover:opacity-100">
+                            <Image
+                                src={workers[(currentWorker - 1 + workers.length) % workers.length].src}
+                                alt={workers[(currentWorker - 1 + workers.length) % workers.length].name}
+                                width={150}
+                                height={150}
+                                className="rounded-full shadow-lg w-auto h-auto transform hover:scale-105 transition-transform duration-200"
+                            />
+                            <h3 className="text-md font-semibold text-gray-600">{workers[(currentWorker - 1 + workers.length) % workers.length].name}</h3>
+                        </div>
+
+                        {/* Current Worker */}
+                        <div className="transform scale-110 transition-transform duration-300">
                             <Image
                                 src={workers[currentWorker].src}
                                 alt={workers[currentWorker].name}
-                                width={250} // Increased width
-                                height={250} // Increased height
-                                className="rounded-full mb-4 shadow-lg transition-transform duration-200 hover:scale-110" // Added shadow and hover effect
+                                width={250}
+                                height={250}
+                                className="rounded-full shadow-lg w-auto h-auto"
                             />
-                            <h3 className="text-3xl font-bold text-blue-600 mb-2">{workers[currentWorker].name}</h3> {/* Increased text size */}
-                            <p className="text-lg text-gray-700">{workers[currentWorker].role}</p> {/* Increased text size */}
+                            <h3 className="text-2xl font-bold text-blue-600 mt-4">{workers[currentWorker].name}</h3>
+                            <p className="text-md text-gray-700">{workers[currentWorker].role}</p>
                         </div>
-                        
-                        {/* Navigation Buttons */}
-                        <div className="flex justify-between w-full max-w-xs mx-auto">
-                            <button
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                                onClick={handleBackWorker}
-                            >
-                                Back
-                            </button>
-                            <button
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                                onClick={handleNextWorker}
-                            >
-                                Next
-                            </button>
-                        </div>
-                    </div>
 
+                        {/* Next Worker */}
+                        <div className="opacity-70 transition-opacity duration-300 hover:opacity-100">
+                            <Image
+                                src={workers[(currentWorker + 1) % workers.length].src}
+                                alt={workers[(currentWorker + 1) % workers.length].name}
+                                width={150}
+                                height={150}
+                                className="rounded-full shadow-lg w-auto h-auto transform hover:scale-105 transition-transform duration-200"
+                            />
+                            <h3 className="text-md font-semibold text-gray-600">{workers[(currentWorker + 1) % workers.length].name}</h3>
+                        </div>
+
+                        {/* Next Button */}
+                        <button
+                            className="text-4xl text-blue-600 hover:text-blue-800 transition-colors duration-200 focus:outline-none transform hover:scale-110"
+                            onClick={handleNextWorker}
+                        >
+                            &gt;
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
