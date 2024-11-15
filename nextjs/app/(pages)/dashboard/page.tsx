@@ -12,29 +12,44 @@ const CockfightsContent = () => (
 );
 
 function Dashboard() {
-  const [activeSection, setActiveSection] = useState('dashboard'); // Default to 'dashboard'
+  const [activeSection, setActiveSection] = useState('dashboard'); 
 
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
         return (
           <div className="relative bg-gradient-to-br from-blue-400 via-purple-300 to-pink-400 p-8 rounded-lg shadow-md overflow-hidden">
-            {/* Wavy Background Animation */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-300 to-pink-400 opacity-50 animate-wavy"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-purple-300 to-blue-400 opacity-50 animate-wavy-reverse"></div>
+            
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-300 to-pink-400 opacity-30 animate-wavy"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-purple-300 to-blue-400 opacity-30 animate-wavy-reverse"></div>
 
             <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 <h2 className="text-xl font-semibold text-gray-700">Total Birds</h2>
-                <p className="text-2xl font-bold text-gray-900">68</p>
+                <p className="text-3xl font-bold text-gray-900">68</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 <h2 className="text-xl font-semibold text-gray-700">Total Wins</h2>
-                <p className="text-2xl font-bold text-gray-900">45</p>
+                <p className="text-3xl font-bold text-gray-900">45</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 <h2 className="text-xl font-semibold text-gray-700">Total Workers</h2>
-                <p className="text-2xl font-bold text-gray-900">6</p>
+                <p className="text-3xl font-bold text-gray-900">6</p>
+              </div>
+            </div>
+
+            
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-gray-700 mb-4">HANDLER</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                  <h3 className="text-xl font-semibold text-gray-700">FAUSTO</h3>
+                  <p className="text-xl font-semibold text-gray-700">35 CHICKENS</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                  <h3 className="text-xl font-semibold text-gray-700">KEIRY</h3>
+                  <p className="text-xl font-semibold text-gray-700">80 CHICKENS</p>
+                </div>
               </div>
             </div>
           </div>
@@ -56,6 +71,7 @@ function Dashboard() {
             alt="Logo"
             width={200}
             height={150}
+            className="object-contain"
           />
         </div>
         <nav className="mt-10">
@@ -63,7 +79,7 @@ function Dashboard() {
             <li>
               <button 
                 onClick={() => setActiveSection('dashboard')} 
-                className={`flex items-center p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-all duration-200 ${activeSection === 'dashboard' && 'bg-gray-300 font-bold'}`}
+                className={`flex items-center p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-all duration-200 ${activeSection === 'dashboard' ? 'bg-gray-300 font-bold' : 'bg-white'}`}
               >
                 Dashboard
               </button>
@@ -71,17 +87,9 @@ function Dashboard() {
             <li>
               <button 
                 onClick={() => setActiveSection('cockfights')} 
-                className={`flex items-center p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-all duration-200 ${activeSection === 'cockfights' && 'bg-gray-300 font-bold'}`}
+                className={`flex items-center p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-all duration-200 ${activeSection === 'cockfights' ? 'bg-gray-300 font-bold' : 'bg-white'}`}
               >
                 Cockfights
-              </button>
-            </li>
-            <li>
-              <button 
-                onClick={() => setActiveSection('settings')} 
-                className={`flex items-center p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-all duration-200 ${activeSection === 'settings' && 'bg-gray-300 font-bold'}`}
-              >
-                Settings
               </button>
             </li>
           </ul>
@@ -90,7 +98,7 @@ function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 p-10 overflow-y-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">{activeSection === 'dashboard' ? 'Dashboard' : 'Cockfights'}</h1>
+        <h1 className="text-4xl font-bold mb-6 text-gray-800">{activeSection === 'dashboard' ? 'Dashboard' : 'Cockfights'}</h1>
         {renderSection()}
       </div>
     </div>

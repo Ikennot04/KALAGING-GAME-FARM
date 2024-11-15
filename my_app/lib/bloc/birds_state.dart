@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/bird_model.dart';
+import 'package:my_app/models/bird_model.dart'; // Make sure to import your Bird model here.
 
 abstract class BirdState extends Equatable {
   const BirdState();
@@ -10,10 +10,10 @@ abstract class BirdState extends Equatable {
 
 class BirdInitial extends BirdState {}
 
-class BirdLoadSuccess extends BirdState {
+class BirdLoaded extends BirdState {
   final List<Bird> birds;
 
-  BirdLoadSuccess(this.birds);
+  const BirdLoaded({required this.birds});
 
   @override
   List<Object> get props => [birds];

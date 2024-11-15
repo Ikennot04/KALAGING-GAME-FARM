@@ -152,7 +152,7 @@ function Statistics() {
           />
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
         
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600" >Statistics</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600" >STATISTICS</h1>
         
 
         {/* Flexbox Container for Charts */}

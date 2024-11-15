@@ -12,7 +12,7 @@ function BirdList() {
     { src: '/root.jpg', description: 'DIARA', id: '6', owner: 'Kentoy', timestamp: '2024-10-18' },
     { src: '/root2.jpg', description: 'DIARA PUD', id: '7', owner: 'Kentoy', timestamp: '2024-10-18' },
     { src: '/branch2.jpg', description: 'AHH GRABEH', id: '8', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/branch3(2).jpg', description: 'SA NAMAN', id: '9', owner: 'Kentoy', timestamp: '2024-10-18' },
+    { src: '/branch3_2.jpg', description: 'SA NAMAN', id: '9', owner: 'Kentoy', timestamp: '2024-10-18' },
   ];
 
   return (

@@ -12,7 +12,7 @@ const workers = [
     { src: '/root2.jpg', name: 'ENGR. JUNARD A. CAÑETE', role: 'KALAGING GAMEFARM OWNER' },
     { src: '/root.jpg', name: 'ATTY. FAUSTO F. FLORES', role: 'HANDLER/BREEDER - CO-OWNER' },
     { src: '/branch.jpg', name: 'KIERY A. FLORES, J.D.', role: 'HANDLER/BREEDER' },
-    { src: '/branch3(2).jpg', name: 'KENT JOHN BRIAN C. FLORES', role: 'TIGPANGAYO UG BAHIN SA DAUG' },
+    { src: '/branch3_2.jpg', name: 'KENT JOHN BRIAN C. FLORES', role: 'TIGPANGAYO UG BAHIN SA DAUG' },
     { src: '/branch2.jpg', name: 'JOHN CARLO C. ROLLON', role: 'TIGPANGAYO GIHAPON UG BAHIN SA DAUG' },
     { src: '/tito.jpg', name: 'DR. CESAR ROLLON', role: 'TIG TAYHOP SA SAMAD' },
 ];
@@ -42,17 +42,17 @@ function AboutUs() {
             className="relative min-h-screen bg-cover bg-center"
             style={{ backgroundImage: `url(${images[currentImage].src})`, transition: 'background-image 1s ease-in-out' }}
         >
-            {/* Gradient Overlay */}
+            
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/40"></div>
 
-            {/* Main Content */}
+            
             <div className="relative z-10 flex flex-col items-center justify-center py-10 px-4">
                 
-                {/* First Section: About Us */}
+                
                 <div className="max-w-4xl w-full bg-white/90 p-8 rounded-lg shadow-lg mb-10 transition-transform duration-500 hover:scale-105">
                     <div className="flex items-center justify-center mb-6">
                         <Image 
-                            src="/SEKIN.gif" // Path to your GIF
+                            src="/SEKIN.gif" 
                             alt="Triangle Animation"
                             width={200}
                             height={250}
@@ -68,13 +68,13 @@ function AboutUs() {
                     </p>
                 </div>
 
-                {/* Workers Section */}
+                
                 <div className="max-w-4xl w-full bg-white/90 p-8 rounded-lg shadow-lg text-center transition-transform duration-500 hover:scale-105">
                     <h2 className="text-4xl font-bold mb-6 text-blue-800">Meet Our Team</h2>
 
-                    {/* Worker Carousel */}
+                    
                     <div className="flex items-center justify-center space-x-4 mb-6">
-                        {/* Back Button */}
+                        
                         <button
                             className="text-4xl text-blue-600 hover:text-blue-800 transition-colors duration-200 focus:outline-none transform hover:scale-110"
                             onClick={handleBackWorker}
