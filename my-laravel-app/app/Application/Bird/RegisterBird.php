@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Application\Product;
+namespace App\Application\Bird;
 
-use App\Domain\Product\BirdRepository;
-use App\Domain\Product\Bird;
+use App\Domain\Bird\BirdRepository;
+use App\Domain\Bird\Bird;
 
 class RegisterBird
 {
@@ -14,7 +14,6 @@ class RegisterBird
         $this->birdRepository = $birdRepository;
     }
     public function create(
-        string $id,
         string $owner,
         string $handler,
         string $image,
@@ -23,40 +22,44 @@ class RegisterBird
         string $updated_at
     ) {
         $data = new Bird(
-            
-            $id,
+            null,
             $owner,
             $handler,
-            $breed,
             $image,
+            $breed,
             $created_at,
             $updated_at,
         );
-        $this->BirdRepository->create($data);
+        $this->birdRepository->create($data);
     }
     public function update(string $id, string $owner, string $handler, string $image, string $breed, string $updated_at)
     {
-        $validate = $this->birdRepository->findByBirdID($id);
+        $validate = $this->birdRepository->findById($id);
 
         if (!$validate) {
             throw new \Exception('Product Not found!');
         }
         $updateBird = new Bird(
-            
+
             id: $id,
             owner: $owner,
             handler: $handler,
             image: $image,
-            breed : $breed,
+            breed: $breed,
             updated_at: $updated_at,
         );
         $this->birdRepository->update($updateBird);
     }
 
-    
-    public function findByBirdID(string $id)
+
+    public function findByBirdID(int $id)
     {
-        return $this->birdRepository->findByBirdID($id);
+        return $this->birdRepository->findById($id);
+    }
+    public function delete(string $id)
+    {
+
+        $this->birdRepository->delete($id);
     }
     public function findAll(): array
     {

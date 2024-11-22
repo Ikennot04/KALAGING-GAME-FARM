@@ -1,8 +1,11 @@
 <?php
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Birds\API\BirdApiController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BirdController;
 
+Route::post('/bird/add', [BirdApiController::class, 'addBird']);
+Route::get('/birds', [BirdApiController::class, 'getAll']);
+Route::get('/birds/search', [BirdApiController::class, 'search']);
 
-    Route::post('/bird/add', [BirdController::class, 'addBird']);      // Create a new bird
-    
 

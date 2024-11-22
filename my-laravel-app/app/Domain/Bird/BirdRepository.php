@@ -13,4 +13,5 @@ interface BirdRepository
     public function findById(int $id): ?Bird;
 
     public function findAll(): array;
+    public function searchBird(string $search): array;
 }

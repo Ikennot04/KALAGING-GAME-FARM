@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Birds\Api;
 
-use App\Services\BirdService;
+use App\Http\Controllers\Controller;
+use App\Application\Bird\RegisterBird;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;  // Add this line to import Carbon class
+use Illuminate\Support\Facades\Validator;  // Add this line to import Carbon class
 
-class BirdController extends Controller
+class BirdApiController extends Controller
 {
-    private RegisterBird $registerBird;
+    private RegisterBird     $registerBird;
 
     public function __construct(RegisterBird $registerBird)
     {
@@ -31,7 +32,7 @@ class BirdController extends Controller
             return response()->json($validate->errors(), 422);
         }
 
-        $id = $this->generateUniqueId();
+        // $id = $this->generateUniqueId();
 
         if ($request->file('image')) {
             // Get the image from the request
@@ -39,7 +40,7 @@ class BirdController extends Controller
             $destinationPath = 'images';
 
             // Renaming the image with the time of upload
-            $imageName = time() . "." . $image->getClientOriginalExtension();
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move($destinationPath, $imageName);
 
             // the image name will be saved in the database
@@ -49,13 +50,12 @@ class BirdController extends Controller
             $data['image'] = 'default.jpg';
         }
 
-        // Make sure that the service method `createBird` handles the saving correctly
-        $this->RegisterBird->create(
-            $id,
+        // Make sure that the service method createBird handles the saving correctly
+        $this->registerBird->create(
             $request->owner,
             $request->handler,
-            $request->breed,
             $data['image'],
+            $request->breed,
             Carbon::now()->toDateTimeString(),
             Carbon::now()->toDateTimeString()
         );
@@ -66,14 +66,14 @@ class BirdController extends Controller
     /**
      * Validate the new ID (it must be unique in the table)
      */
-    private function generateUniqueId(): string
-    {
-        do {
-            $id = $this->generateRandomAlphanumericID(15);
-        } while ($this->registerBird->findByBirdID($id));  // Assuming `findByBirdID` method exists
+    // private function generateUniqueId(): string
+    // {
+    //     do {
+    //         $id = $this->generateRandomAlphanumericID(15);
+    //     } while ($this->registerBird->findByBirdID($id));  // Assuming findByBirdID method exists
 
-        return $id;
-    }
+    //     return $id;
+    // }
 
     /**
      * Generate random 15-character alphanumeric ID
@@ -82,4 +82,31 @@ class BirdController extends Controller
     {
         return substr(bin2hex(random_bytes($length / 2)), 0, $length);
     }
+
+
+    public function getAll()
+{
+    // Fetch all birds from the service
+    $birdModels = $this->registerBird->findAll();
+
+    // Convert each Bird object to an array using the toArray method
+    $birds = array_map(fn($birdModel) => $birdModel->toArray(), $birdModels);
+
+    // Return the data in a structured JSON response
+    return response()->json(['birds' => $birds], 200);
+}
+public function search(Request $request)
+{
+    $searchTerm = $request->query('search', '');
+
+    // Use the repository to perform the search
+    $results = $this->registerBird->search($searchTerm);
+
+    return response()->json([
+        'match' => $results['match'] ? $results['match']->toArray() : null,
+        'related' => $results['related']
+    ]);
+}
+
+
 }
