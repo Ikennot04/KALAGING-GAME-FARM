@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Application\Bird\RegisterBird;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;  // Add this line to import Carbon class
+use Illuminate\Support\Facades\Validator;  
 
 class BirdApiController extends Controller
 {
@@ -94,6 +94,51 @@ class BirdApiController extends Controller
 
     // Return the data in a structured JSON response
     return response()->json(['birds' => $birds], 200);
+}
+
+public function updateBird($id, Request $request)
+{
+    $bird = $this->registerBird->findByBirdID($id);
+    if (!$bird) {
+        abort(404);
+    }
+
+    $validated = $request->validate([
+        'breed' => 'required|string',
+        'owner' => 'required|string',
+        'handler' => 'required|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
+
+    $imageName = $bird->getImage(); // Default to the existing image
+
+    if ($request->hasFile('image')) {
+        // Delete the old image if it exists
+        if ($imageName && $imageName !== 'default.jpg' && Storage::disk('public')->exists('images/' . $imageName)) {
+            Storage::disk('public')->delete('images/' . $imageName);
+        }
+
+        // Store the new image
+        $image = $request->file('image');
+        $imageName = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
+        Storage::disk('public')->putFileAs('images', $image, $imageName);
+    }
+
+    // Update bird data
+    try {
+        $this->registerBird->update(
+            $id,
+            $validated['breed'],
+            $validated['owner'],
+            $validated['handler'],
+            $imageName, // Use the updated image name
+            now()->toDateTimeString()
+        );
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Failed to update bird: ' . $e->getMessage());
+    }
+
+    return redirect()->route('dashboard')->with('success', 'Bird updated successfully');
 }
 public function search(Request $request)
 {

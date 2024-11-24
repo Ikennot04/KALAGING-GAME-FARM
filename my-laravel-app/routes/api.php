@@ -7,5 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/bird/add', [BirdApiController::class, 'addBird']);
 Route::get('/birds', [BirdApiController::class, 'getAll']);
 Route::get('/birds/search', [BirdApiController::class, 'search']);
+Route::put('/birds/update/{id}', [BirdApiController::class, 'updateBird']);
 
 

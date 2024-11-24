@@ -1,40 +1,101 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-function BirdList() {
-  const images = [
-    { src: '/KALAGINGGF.jpg', description: 'KANI', id: '1', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/MANGKOS.jpg', description: 'KANA', id: '2', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/MANKOS.jpg', description: 'KANI PAJUD', id: '3', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/MANOK.jpg', description: 'KANA NAPUD', id: '4', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/branch.jpg', description: 'TUARA', id: '5', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/root.jpg', description: 'DIARA', id: '6', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/root2.jpg', description: 'DIARA PUD', id: '7', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/branch2.jpg', description: 'AHH GRABEH', id: '8', owner: 'Kentoy', timestamp: '2024-10-18' },
-    { src: '/branch3_2.jpg', description: 'SA NAMAN', id: '9', owner: 'Kentoy', timestamp: '2024-10-18' },
-  ];
+interface Bird {
+  id: number;
+  owner: string;
+  image: string;
+  handler: string;
+  breed: string;
+  created_at: string;
+}
+
+const BirdList: React.FC = () => {
+  const [birds, setBirds] = useState<Bird[]>([]); // Initialize as an empty array
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const itemsPerPage = 20;
+
+  useEffect(() => {
+    const fetchBirds = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:8000/api/birds');
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setBirds(Array.isArray(data) ? data : data.birds || []);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+        setBirds([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBirds();
+  }, []);
+
+  const totalPages = Math.ceil(birds.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const selectedBirds = birds.slice(startIndex, startIndex + itemsPerPage);
+
+  if (loading) {
+    return <div className="text-center mt-8">Loading birds...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-8 text-red-500">Error: {error}</div>;
+  }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {images.map((bird) => (
-          <Link href={`/birds/${bird.id}`} key={bird.id}>
-            <div className='text-center bg-white p-4 rounded-lg shadow-md transition-transform duration-200 hover:scale-105 hover:shadow-lg'>
-              <Image 
-                src={bird.src} 
-                alt={bird.description} 
-                width={200} 
-                height={150} 
-                className='rounded-lg w-full h-auto'
-              />
-              <p className='mt-4 text-gray-600'>{bird.description}</p>
+    <div className="p-8 font-sans">
+      <h1 className="text-2xl font-bold text-center mb-8">Bird List</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {selectedBirds.map((bird) => (
+          <div
+            key={bird.id}
+            className="border rounded-lg overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow"
+          >
+            <img
+              src={`http://localhost:8000${bird.image}`}
+              alt={`Bird owned by ${bird.owner}`}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <p className="font-semibold text-center">{bird.owner}</p>
+              <p className="text-sm text-center text-gray-500">Handler: {bird.handler}</p>
+              <p className="text-sm text-center text-gray-500">Breed: {bird.breed}</p>
+              <p className="text-sm text-center text-gray-500">Created: {bird.created_at}</p>
             </div>
-          </Link>
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-center mt-8">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-4 py-2 mx-1 rounded-lg text-white ${
+              index + 1 === currentPage
+                ? 'bg-blue-500'
+                : 'bg-gray-300 hover:bg-gray-400'
+            }`}
+          >
+            {index + 1}
+          </button>
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default BirdList;
