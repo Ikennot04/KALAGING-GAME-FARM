@@ -2,6 +2,8 @@
 
 namespace App\Domain\Bird;
 
+use Illuminate\Support\Facades\Storage;
+
 class Bird
 {
     private ?int $id;
@@ -69,5 +71,11 @@ class Bird
     public function Updated()
     {
         return $this->updated_at;
+    }
+    public function getImageUrl()
+    {
+        return $this->image 
+            ? Storage::disk('public')->url('images/' . $this->image)
+            : Storage::disk('public')->url('images/default.jpg');
     }
 }

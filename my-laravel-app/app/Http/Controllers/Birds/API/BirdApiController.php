@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Application\Bird\RegisterBird;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;  
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class BirdApiController extends Controller
 {
@@ -24,7 +26,7 @@ class BirdApiController extends Controller
         $validate = Validator::make($data, [
             'owner' => 'required|string',
             'handler' => 'required|string',
-            'image' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'breed' => 'required|string',
         ]);
 
@@ -32,25 +34,16 @@ class BirdApiController extends Controller
             return response()->json($validate->errors(), 422);
         }
 
-        // $id = $this->generateUniqueId();
-
-        if ($request->file('image')) {
-            // Get the image from the request
+        if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $destinationPath = 'images';
-
-            // Renaming the image with the time of upload
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move($destinationPath, $imageName);
-
-            // the image name will be saved in the database
+            $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-\.]/', '', $image->getClientOriginalName());
+            
+            Storage::disk('public')->putFileAs('images', $image, $imageName);
             $data['image'] = $imageName;
         } else {
-            // Default image if no image is uploaded
             $data['image'] = 'default.jpg';
         }
 
-        // Make sure that the service method createBird handles the saving correctly
         $this->registerBird->create(
             $request->owner,
             $request->handler,
@@ -110,35 +103,34 @@ public function updateBird($id, Request $request)
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
 
-    $imageName = $bird->getImage(); // Default to the existing image
+    $imageName = $bird->getImage();
 
     if ($request->hasFile('image')) {
-        // Delete the old image if it exists
-        if ($imageName && $imageName !== 'default.jpg' && Storage::disk('public')->exists('images/' . $imageName)) {
+        if ($imageName && $imageName !== 'default.jpg') {
             Storage::disk('public')->delete('images/' . $imageName);
         }
 
-        // Store the new image
         $image = $request->file('image');
-        $imageName = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
+        $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-\.]/', '', $image->getClientOriginalName());
         Storage::disk('public')->putFileAs('images', $image, $imageName);
     }
 
-    // Update bird data
     try {
+        // Match Bird constructor parameter order
         $this->registerBird->update(
             $id,
-            $validated['breed'],
-            $validated['owner'],
-            $validated['handler'],
-            $imageName, // Use the updated image name
+            $validated['owner'],    // owner
+            $validated['handler'],  // handler
+            $imageName,            // image
+            $validated['breed'],    // breed
             now()->toDateTimeString()
         );
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Failed to update bird: ' . $e->getMessage());
-    }
 
-    return redirect()->route('dashboard')->with('success', 'Bird updated successfully');
+        return response()->json(['message' => 'Bird updated successfully'], 200);
+    } catch (\Exception $e) {
+        Log::error('Failed to update bird: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to update bird: ' . $e->getMessage()], 500);
+    }
 }
 public function search(Request $request)
 {

@@ -39,32 +39,25 @@ class BirdWebController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $imageName = $bird->getImage(); // Keep existing image by default
+        $imageName = $bird->getImage();
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists and isn't default
-            if ($imageName && $imageName !== 'default.jpg' && Storage::disk('public')->exists('images/' . $imageName)) {
+            if ($imageName && $imageName !== 'default.jpg') {
                 Storage::disk('public')->delete('images/' . $imageName);
             }
 
             $image = $request->file('image');
             $imageName = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
-            
-            // Store the new image
-            try {
-                Storage::disk('public')->putFileAs('images', $image, $imageName);
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Failed to upload image: ' . $e->getMessage());
-            }
+            Storage::disk('public')->putFileAs('images', $image, $imageName);
         }
 
         try {
             $this->registerBird->update(
                 $id,
-                $validated['breed'],
                 $validated['owner'],
                 $validated['handler'],
                 $imageName,
+                $validated['breed'],
                 now()->toDateTimeString()
             );
         } catch (\Exception $e) {
