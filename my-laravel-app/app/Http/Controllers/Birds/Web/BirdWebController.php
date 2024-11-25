@@ -115,5 +115,40 @@ class BirdWebController extends Controller
         return substr(bin2hex(random_bytes($length / 2)), 0, $length);
     }
 
-
+    
+    public function search(Request $request)
+    {
+        $searchTerm = $request->query('search', '');
+    
+        try {
+            $results = $this->registerBird->search($searchTerm);
+            
+            return response()->json([
+                'match' => $results['match'] ? [
+                    'id' => $results['match']->getId(),
+                    'breed' => $results['match']->getBreed(),
+                    'owner' => $results['match']->getOwner(),
+                    'handler' => $results['match']->getHandler(),
+                    'image' => $results['match']->getImage(),
+                    'created_at' => $results['match']->Created(),
+                    'updated_at' => $results['match']->Updated()
+                ] : null,
+                'related' => array_map(function($bird) {
+                    return [
+                        'id' => $bird->getId(),
+                        'breed' => $bird->getBreed(),
+                        'owner' => $bird->getOwner(),
+                        'handler' => $bird->getHandler(),
+                        'image' => $bird->getImage(),
+                        'created_at' => $bird->Created(),
+                        'updated_at' => $bird->Updated()
+                    ];
+                }, $results['related'])
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Search failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

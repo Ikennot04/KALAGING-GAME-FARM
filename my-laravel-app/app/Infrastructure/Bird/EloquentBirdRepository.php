@@ -58,66 +58,50 @@ class EloquentBirdRepository implements BirdRepository
     }
     public function findById(int $id): ?Bird
     {
-        $productBird = BirdModel::find($id);
-        if (!$productBird) {
-            return null;
-        }
-        return new Bird(
-            $productBird->id,
-            $productBird->owner,
-            $productBird->handler,
-            $productBird->image,
-            $productBird->breed,
-            $productBird->created_at,
-            $productBird->updated_at,
-
-
-        );
+        $birdModel = BirdModel::find($id);
+        return $birdModel ? $this->createBirdFromModel($birdModel) : null;
     }
     public function findAll(): array
     {
-        return BirdModel::all()->map(fn($productBird) => new Bird(
-            $productBird->id,
-            $productBird->owner,
-            $productBird->handler,
-            $productBird->image,
-            $productBird->breed,
-            $productBird->created_at,
-            $productBird->updated_at,
-        ))->toArray();
+        return BirdModel::all()
+            ->map(fn($model) => $this->createBirdFromModel($model))
+            ->toArray();
     }
     public function searchBird(string $search): array
     {
-        $match = BirdModel::where('handler', $search)->orWhere('owner', $search)->orWhere('breed')->first();
+        $match = BirdModel::where('id', $search)
+            ->orWhere('breed', $search)
+            ->orWhere('owner', $search)
+            ->orWhere('handler', $search)
+            ->first();
 
-        $related = BirdModel::where('id', '!=', $match?->id)
-            ->where('owner', 'LIKE', "%{$search}%")
-            ->orWhere('breed', 'LIKE', "%{$search}%")
-            ->orWhere('handler', 'LIKE', "%{$search}%")->get();
+        $related = BirdModel::where(function($query) use ($search) {
+            $query->where('id', 'LIKE', "%{$search}%")
+                  ->orWhere('breed', 'LIKE', "%{$search}%")
+                  ->orWhere('owner', 'LIKE', "%{$search}%")
+                  ->orWhere('handler', 'LIKE', "%{$search}%");
+        })
+        ->when($match, function($query) use ($match) {
+            return $query->where('id', '!=', $match->id);
+        })
+        ->get();
 
         return [
-            'match' => $match ? new Bird(
-                $match->id,
-                $match->owner,
-                $match->handler,
-                $match->image,
-                $match->breed,
-                $match->created_at,
-                $match->updated_at,
-            ) : null,
-            'related' => $related->map(
-                function ($bird) {
-                    return new Bird(
-                        $bird->id,
-                        $bird->owner,
-                        $bird->handler,
-                        $bird->image,
-                        $bird->breed,
-                        $bird->created_at,
-                        $bird->updated_at,
-                    );
-                }
-            )->toArray()
+            'match' => $match ? $this->createBirdFromModel($match) : null,
+            'related' => $related->map(fn($model) => $this->createBirdFromModel($model))->all()
         ];
+    }
+
+    private function createBirdFromModel(BirdModel $model): Bird
+    {
+        return new Bird(
+            id: $model->id,
+            owner: $model->owner,
+            handler: $model->handler,
+            image: $model->image,
+            breed: $model->breed,
+            created_at: $model->created_at,
+            updated_at: $model->updated_at
+        );
     }
 }

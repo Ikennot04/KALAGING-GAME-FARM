@@ -69,12 +69,11 @@ class RegisterBird
     }
     public function search(string $search): array
     {
-        $bird = $this->birdRepository->searchBird($search);
+        $results = $this->birdRepository->searchBird($search);
+        
         return [
-            'match' => $bird['match'] ? $bird['match']->toArray() : null,
-            'related' => array_map(function ($bird) {
-                return $bird->toArray();
-            }, $bird['related'])
+            'match' => $results['match'] ? $results['match'] : null,
+            'related' => $results['related'] ?? []
         ];
     }
 }
