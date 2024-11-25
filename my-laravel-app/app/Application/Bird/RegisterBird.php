@@ -22,13 +22,13 @@ class RegisterBird
         string $updated_at
     ) {
         $data = new Bird(
-            null,
-            $owner,
-            $handler,
-            $image,
-            $breed,
-            $created_at,
-            $updated_at,
+            id: null,
+            owner: $owner,
+            handler: $handler,
+            image: $image,
+            breed: $breed,
+            created_at: $created_at,
+            updated_at: $updated_at
         );
         $this->birdRepository->create($data);
     }
@@ -37,17 +37,19 @@ class RegisterBird
         $validate = $this->birdRepository->findById($id);
 
         if (!$validate) {
-            throw new \Exception('Product Not found!');
+            throw new \Exception('Bird Not found!');
         }
-        $updateBird = new Bird(
 
+        $updateBird = new Bird(
             id: $id,
             owner: $owner,
             handler: $handler,
             image: $image,
             breed: $breed,
-            updated_at: $updated_at,
+            created_at: $validate->Created(),
+            updated_at: $updated_at
         );
+        
         $this->birdRepository->update($updateBird);
     }
 

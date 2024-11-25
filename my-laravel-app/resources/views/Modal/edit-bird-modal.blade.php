@@ -1,92 +1,142 @@
-<div id="editModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex justify-center items-center">
-    <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
-        <h3 class="text-lg font-semibold mb-4">Edit Bird</h3>
-        <form id="editForm" method="POST" enctype="multipart/form-data">
+<div 
+    x-data="editBirdModal()"
+    @open-edit-modal.window="openModal($event.detail)"
+>
+    <!-- Modal Backdrop -->
+    <div 
+        x-show="open"
+        x-transition
+        class="fixed inset-0 bg-black bg-opacity-50" 
+        @click="open = false"
+        style="display: none;"
+    ></div>
+
+    <!-- Modal -->
+    <div 
+        x-show="open"
+        x-transition
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg"
+        @click.outside="open = false"
+        style="display: none;"
+    >
+        <h2 class="text-xl font-bold mb-4">Edit Bird</h2>
+        
+        <form method="POST" :action="`/birds/${birdId}`" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            
-            <!-- Current Image Preview -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Current Image</label>
-                <img id="currentImage" src="" alt="Bird Image" class="w-32 h-32 object-cover rounded">
+
+            <input type="hidden" name="bird_id" x-model="birdId">
+
+            <div class="form-group mb-4">
+                <label for="breed" class="block mb-1">Breed:</label>
+                <input 
+                    type="text" 
+                    id="breed" 
+                    name="breed" 
+                    x-model="breed" 
+                    class="w-full border rounded px-2 py-1"
+                    required
+                >
             </div>
 
-            <!-- Image Upload -->
-            <div class="mb-4">
-                <label for="editImage" class="block text-sm font-medium text-gray-700 mb-2">Update Image</label>
-                <input type="file" 
+            <div class="form-group mb-4">
+                <label for="owner" class="block mb-1">Owner:</label>
+                <input 
+                    type="text" 
+                    id="owner" 
+                    name="owner" 
+                    x-model="owner" 
+                    class="w-full border rounded px-2 py-1"
+                    required
+                >
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="handler" class="block mb-1">Handler:</label>
+                <input 
+                    type="text" 
+                    id="handler" 
+                    name="handler" 
+                    x-model="handler" 
+                    class="w-full border rounded px-2 py-1"
+                    required
+                >
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="image" class="block mb-1">Image:</label>
+                <input 
+                    type="file" 
+                    id="image" 
                     name="image" 
-                    id="editImage" 
-                    accept="image/*"
-                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    @change="handleFileUpload($event)"
+                    class="w-full"
+                >
+                <img 
+                    :src="imagePreview" 
+                    alt="Bird Image" 
+                    class="mt-2 max-w-[200px] h-auto"
+                >
             </div>
 
-            <div class="mb-4">
-                <label for="editBreed" class="block text-sm font-medium text-gray-700 mb-2">Breed</label>
-                <input type="text" name="breed" id="editBreed" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label for="editOwner" class="block text-sm font-medium text-gray-700 mb-2">Owner</label>
-                <input type="text" name="owner" id="editOwner" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label for="editHandler" class="block text-sm font-medium text-gray-700 mb-2">Handler</label>
-                <input type="text" name="handler" id="editHandler" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-            </div>
             <div class="flex justify-end space-x-2">
-                <button type="button" onclick="closeModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Update</button>
+                <button 
+                    type="button" 
+                    @click="open = false"
+                    class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Save Changes
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-
 <script>
-   function openModal(id, breed, owner, handler, image) {
-    const modal = document.getElementById('editModal');
-    const form = document.getElementById('editForm');
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('editBirdModal', () => ({
+            open: false,
+            birdId: '',
+            breed: '',
+            owner: '',
+            handler: '',
+            imagePreview: '',
 
-    // Set form action
-    form.action = `/birds/${id}`;
+            openModal(detail) {
+                this.open = true;
+                this.birdId = detail.id;
+                this.breed = detail.breed;
+                this.owner = detail.owner;
+                this.handler = detail.handler;
+                this.imagePreview = detail.image 
+                    ? `/storage/images/${detail.image}` 
+                    : '/storage/images/default.jpg';
+            },
 
-    // Set input values
-    document.getElementById('editBreed').value = breed;
-    document.getElementById('editOwner').value = owner;
-    document.getElementById('editHandler').value = handler;
+            handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                const originalBreed = this.breed;
 
-    // Set current image
-    const currentImage = document.getElementById('currentImage');
-    if (image) {
-        // Use the full URL path including your app URL
-        currentImage.src = `/storage/images/${image}`;
-    } else {
-        currentImage.src = '/storage/images/default.jpg';
-    }
+                reader.onload = (e) => {
+                    this.imagePreview = e.target.result;
+                    this.breed = originalBreed;
+                };
 
-    // Show modal
-    modal.classList.remove('hidden');
-}
-
-// Dynamically preview the new uploaded image
-document.getElementById('editImage').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            document.getElementById('currentImage').src = e.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
-function closeModal() {
-    const modal = document.getElementById('editModal');
-    modal.classList.add('hidden');
-
-    // Reset form fields when closing
-    document.getElementById('editForm').reset();
-    document.getElementById('currentImage').src = '';
-}
-
+                reader.readAsDataURL(file);
+            }
+        }));
+    });
 </script>
+
+<style>
+    /* Keep your existing styles */
+</style>
