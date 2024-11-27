@@ -66,9 +66,10 @@ const BirdList: React.FC = () => {
             className="border rounded-lg overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow"
           >
             <img
-              src={`http://localhost:8000${bird.image}`}
+              src={`http://localhost:8000/storage/images/${bird.image}`}
               alt={`Bird owned by ${bird.owner}`}
               className="w-full h-48 object-cover"
+              
             />
             <div className="p-4">
               <p className="font-semibold text-center">{bird.owner}</p>
@@ -80,7 +81,7 @@ const BirdList: React.FC = () => {
         ))}
       </div>
       <div className="flex justify-center mt-8">
-        {Array.from({ length: totalPages }, (_, index) => (
+      {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
