@@ -54,7 +54,7 @@ class RegisterWorker
 
     public function findByWorkerID(int $id)
     {
-        return $this->workerRepository->findById($id);
+        return $this->workerRepository->findByID($id);
     }
     public function delete(string $id)
     {

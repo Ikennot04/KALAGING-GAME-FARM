@@ -16,9 +16,11 @@ class BirdWebController extends Controller
     {
         $this->registerBird = $registerBird;
     }
-    /**
-     * View Products.
-     * **/
+    public function viewBirdPage()
+{
+    $birds = app(RegisterBird::class)->findAll(); // Returns array of Bird objects
+    return view('Pages.Birds.bird', ['birds' => $birds]);
+}
     public function index()
     {
         $birds = $this->registerBird->findAll();

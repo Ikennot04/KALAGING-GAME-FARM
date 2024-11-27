@@ -67,8 +67,8 @@ class EloquentWorkerRepository implements WorkerRepository
     public function searchWorker(string $search): array
     {
         $match = WorkerModel::where('id', $search)
-            ->orWhere('name', $search)
-            ->orWhere('position', $search)
+            ->orWhere('name', 'LIKE', "{$search}%")
+            ->orWhere('position', 'LIKE', "{$search}%")
             ->first();
 
         $related = WorkerModel::where(function($query) use ($search) {

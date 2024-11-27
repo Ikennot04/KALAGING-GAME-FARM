@@ -1,6 +1,6 @@
 'use client'; // Ensure client-side rendering
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image'; // Keep the Image import
 import CockFights from '../birds/cockfights/page';
 
@@ -13,6 +13,25 @@ const CockfightsContent = () => (
 
 function Dashboard() {
   const [activeSection, setActiveSection] = useState('dashboard'); 
+  const [stats, setStats] = useState({
+    birdCount: 0,
+    workerCount: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/dashboard/stats');
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        setStats(data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -26,15 +45,12 @@ function Dashboard() {
             <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 <h2 className="text-xl font-semibold text-gray-700">Total Birds</h2>
-                <p className="text-3xl font-bold text-gray-900">68</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.birdCount}</p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                <h2 className="text-xl font-semibold text-gray-700">Total Wins</h2>
-                <p className="text-3xl font-bold text-gray-900">45</p>
-              </div>
+              
               <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 <h2 className="text-xl font-semibold text-gray-700">Total Workers</h2>
-                <p className="text-3xl font-bold text-gray-900">6</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.workerCount}</p>
               </div>
             </div>
 

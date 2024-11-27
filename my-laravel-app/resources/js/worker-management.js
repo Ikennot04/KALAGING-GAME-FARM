@@ -1,56 +1,71 @@
-document.addEventListener('alpine:init', () => {
+if (typeof Alpine !== 'undefined') {
     Alpine.data('workerManagement', () => ({
+        formData: {
+            name: '',
+            position: '',
+            image: null
+        },
         searchTerm: '',
         searchResults: {
             match: null,
             related: []
         },
+        showResults: false,
+        showAddModal: false,
+        imagePreview: '',
+
+        init() {
+            console.log('Component mounted, formData initialized:', this.formData);
+        },
+
+        handleFileUpload(event) {
+            this.formData.image = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imagePreview = e.target.result;
+            };
+            if (this.formData.image) {
+                reader.readAsDataURL(this.formData.image);
+            }
+        },
 
         async performSearch() {
-            if (!this.searchTerm) {
+            if (this.searchTerm.length < 2) {
                 this.searchResults = { match: null, related: [] };
+                this.showResults = false;
                 return;
             }
 
             try {
-                const response = await fetch(`/api/workers/search?search=${this.searchTerm}`);
+                const response = await fetch(`/api/workers/search?search=${encodeURIComponent(this.searchTerm)}`);
+                if (!response.ok) throw new Error('Search failed');
+                
                 const data = await response.json();
                 this.searchResults = data;
+                this.showResults = true;
             } catch (error) {
-                console.error('Search failed:', error);
+                console.error('Search error:', error);
+                this.searchResults = { match: null, related: [] };
+                this.showResults = false;
             }
         },
 
         getImageUrl(image) {
-            if (!image) return '/images/default.jpg';
-            try {
-                return `/storage/images/${image}`;
-            } catch (error) {
-                return '/images/default.jpg';
-            }
+            return image ? `/storage/images/${image}` : '/storage/images/default.jpg';
         },
 
         highlightAndScrollTo(workerId) {
             const row = document.getElementById(`worker-row-${workerId}`);
             if (!row) return;
 
-            // Remove any existing highlights
-            document.querySelectorAll('tr.bg-yellow-100').forEach(el => {
-                el.classList.remove('bg-yellow-100');
-            });
-
-            // Add highlight to the target row
             row.classList.add('bg-yellow-100');
             row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Remove highlight after 2 seconds
+            
             setTimeout(() => {
                 row.classList.remove('bg-yellow-100');
             }, 2000);
 
-            // Clear search results
-            this.searchResults = { match: null, related: [] };
-            this.searchTerm = '';
+            this.showResults = false;
         }
-    }));
-});
+    }))
+}

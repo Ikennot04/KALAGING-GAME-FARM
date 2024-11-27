@@ -89,7 +89,7 @@ class WorkerApiController extends Controller
 
 public function updateWorker($id, Request $request)
 {
-    $worker = $this->registerWorker->findById($id);
+    $worker = $this->registerWorker->findByWorkerID($id);
     if (!$worker) {
         abort(404);
     }
@@ -136,8 +136,24 @@ public function search(Request $request)
     $results = $this->registerWorker->search($searchTerm);
 
     return response()->json([
-        'match' => $results['match'] ? $results['match']->toArray() : null,
-        'related' => $results['related']
+        'match' => $results['match'] ? [
+            'id' => $results['match']->getId(),
+            'name' => $results['match']->getName(),
+            'position' => $results['match']->getPosition(),
+            'image' => $results['match']->getImage(),
+            'created_at' => $results['match']->getCreatedAt(),
+            'updated_at' => $results['match']->getUpdatedAt()
+        ] : null,
+        'related' => array_map(function($worker) {
+            return [
+                'id' => $worker->getId(),
+                'name' => $worker->getName(),
+                'position' => $worker->getPosition(),
+                'image' => $worker->getImage(),
+                'created_at' => $worker->getCreatedAt(),
+                'updated_at' => $worker->getUpdatedAt()
+            ];
+        }, $results['related'])
     ]);
 }
 
