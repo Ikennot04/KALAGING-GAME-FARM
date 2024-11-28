@@ -1,57 +1,124 @@
-function searchBirds() {
-    return {
-        searchTerm: '',
-        searchResults: {
-            match: null,
-            related: []
+$(document).ready(function() {
+    const BirdManagement = {
+        init: function() {
+            this.bindEvents();
+            console.log('Bird Management initialized with jQuery version:', $.fn.jquery);
         },
-        showResults: false,
-        highlightedId: null,
-        async performSearch() {
-            if (this.searchTerm.length < 1) {
-                this.searchResults = { match: null, related: [] };
-                this.showResults = false;
+
+        bindEvents: function() {
+            console.log('Binding search input event');
+            $('#searchInput').on('input', (e) => {
+                console.log('Search input changed:', e.target.value);
+                this.performSearch();
+            });
+
+            $(document).on('click', '.search-result-item', function() {
+                const birdId = $(this).data('bird-id');
+                BirdManagement.highlightAndScrollTo(birdId);
+            });
+        },
+
+        performSearch: function() {
+            const searchTerm = $('#searchInput').val().trim();
+            if (searchTerm.length < 1) {
+                $('#searchResults').hide();
                 return;
             }
 
-            try {
-                const response = await fetch(`/birds/search?search=${encodeURIComponent(this.searchTerm)}`);
-                if (!response.ok) throw new Error('Search failed');
-                
-                this.searchResults = await response.json();
-                this.showResults = true;
-            } catch (error) {
-                console.error('Search error:', error);
-                this.searchResults = { match: null, related: [] };
-                this.showResults = false;
-            }
-        },
-        highlightAndScrollTo(id) {
-            // Remove previous highlight
-            if (this.highlightedId) {
-                const prevRow = document.getElementById(`bird-row-${this.highlightedId}`);
-                if (prevRow) {
-                    prevRow.classList.remove('bg-yellow-100');
+            // Check if search term is a number (ID search)
+            const isIdSearch = !isNaN(searchTerm) && searchTerm.length > 0;
+
+            $.ajax({
+                url: `/birds/search?search=${encodeURIComponent(searchTerm)}&type=${isIdSearch ? 'id' : 'text'}`,
+                method: 'GET',
+                success: function(data) {
+                    console.log('Search results:', data); // Debug log
+                    if (data.match || (data.related && data.related.length > 0)) {
+                        const html = BirdManagement.buildSearchResultsHtml(data);
+                        $('#searchResults').html(html).show();
+                    } else {
+                        $('#searchResults').html('<div class="p-2 text-gray-500">No results found</div>').show();
+                    }
+                },
+                error: function(error) {
+                    console.error('Search error:', error);
+                    $('#searchResults').hide();
                 }
-            }
-
-            // Add new highlight
-            const row = document.getElementById(`bird-row-${id}`);
-            if (row) {
-                row.classList.add('bg-yellow-100');
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                this.highlightedId = id;
-            }
-
-            // Close the dropdown
-            this.showResults = false;
-            this.searchTerm = '';
+            });
         },
-        getImageUrl(imageName) {
-            if (!imageName || imageName === 'default.jpg') {
-                return '/storage/images/default.jpg';
+
+        buildSearchResultsHtml: function(data) {
+            let html = '';
+            
+            if (data.match) {
+                html += `
+                    <div class="p-3 border-b border-gray-200">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Exact Match</h3>
+                        <div class="search-result-item flex items-center space-x-3 hover:bg-gray-100 p-2 rounded cursor-pointer" 
+                             data-bird-id="${data.match.id}">
+                            <img src="/storage/images/${data.match.image || 'default.jpg'}" 
+                                 alt="${data.match.breed}"
+                                 class="h-10 w-10 rounded-full object-cover">
+                            <div>
+                                <div class="font-medium">${data.match.breed}</div>
+                                <div class="text-sm text-gray-500">
+                                    Owner: ${data.match.owner} | Handler: ${data.match.handler}
+                                </div>
+                                <div class="text-xs text-gray-400">ID: ${data.match.id}</div>
+                            </div>
+                        </div>
+                    </div>`;
             }
-            return `/storage/images/${imageName}`;
+
+            if (data.related && data.related.length > 0) {
+                html += `
+                    <div class="p-3">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">
+                            ${data.match ? 'Related Results' : 'Search Results'}
+                        </h3>
+                        <div class="space-y-2">`;
+                
+                data.related.forEach(bird => {
+                    html += `
+                        <div class="search-result-item flex items-center space-x-3 hover:bg-gray-100 p-2 rounded cursor-pointer" 
+                             data-bird-id="${bird.id}">
+                            <img src="/storage/images/${bird.image || 'default.jpg'}" 
+                                 alt="${bird.breed}"
+                                 class="h-10 w-10 rounded-full object-cover">
+                            <div>
+                                <div class="font-medium">${bird.breed}</div>
+                                <div class="text-sm text-gray-500">
+                                    Owner: ${bird.owner} | Handler: ${bird.handler}
+                                </div>
+                                <div class="text-xs text-gray-400">ID: ${bird.id}</div>
+                            </div>
+                        </div>`;
+                });
+
+                html += `
+                        </div>
+                    </div>`;
+            }
+
+            return html;
+        },
+
+        highlightAndScrollTo: function(birdId) {
+            const row = $(`#bird-row-${birdId}`);
+            if (row.length) {
+                row.addClass('bg-yellow-100');
+                $('html, body').animate({
+                    scrollTop: row.offset().top - (window.innerHeight / 2)
+                }, 500);
+                
+                setTimeout(() => {
+                    row.removeClass('bg-yellow-100');
+                }, 2000);
+                
+                $('#searchResults').hide();
+            }
         }
-    }
-} 
+    };
+
+    BirdManagement.init();
+});

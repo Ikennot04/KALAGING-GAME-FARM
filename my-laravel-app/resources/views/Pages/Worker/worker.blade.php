@@ -12,7 +12,7 @@
                 <input 
                     type="text" 
                     id="searchInput"
-                    placeholder="Search by name or position..."
+                    placeholder="Search by ID, name or position..."
                     class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                 <div 

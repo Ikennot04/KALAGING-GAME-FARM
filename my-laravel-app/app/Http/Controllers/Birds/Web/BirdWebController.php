@@ -121,9 +121,14 @@ class BirdWebController extends Controller
     public function search(Request $request)
     {
         $searchTerm = $request->query('search', '');
-    
+        \Log::debug('Search request received', ['term' => $searchTerm]);
+
         try {
             $results = $this->registerBird->search($searchTerm);
+            \Log::debug('Search results', [
+                'match' => $results['match'] ? $results['match']->getId() : null,
+                'related_count' => count($results['related'])
+            ]);
             
             return response()->json([
                 'match' => $results['match'] ? [
@@ -148,6 +153,10 @@ class BirdWebController extends Controller
                 }, $results['related'])
             ]);
         } catch (\Exception $e) {
+            \Log::error('Search failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'error' => 'Search failed: ' . $e->getMessage()
             ], 500);
