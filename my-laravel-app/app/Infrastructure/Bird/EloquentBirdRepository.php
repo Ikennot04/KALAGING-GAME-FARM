@@ -63,9 +63,8 @@ class EloquentBirdRepository implements BirdRepository
     }
     public function findAll(): array
     {
-        return BirdModel::all()
-            ->map(fn($model) => $this->createBirdFromModel($model))
-            ->toArray();
+        $birds = BirdModel::active()->get();
+        return $birds->map(fn($model) => $this->createBirdFromModel($model))->all();
     }
     public function searchBird(string $search): array
     {
@@ -90,6 +89,24 @@ class EloquentBirdRepository implements BirdRepository
             'match' => $match ? $this->createBirdFromModel($match) : null,
             'related' => $related->map(fn($model) => $this->createBirdFromModel($model))->all()
         ];
+    }
+
+    public function softDelete(string $id): void
+    {
+        BirdModel::where('id', $id)
+            ->update(['deleted' => 1]);
+    }
+
+    public function restore(string $id): void
+    {
+        BirdModel::where('id', $id)
+            ->update(['deleted' => 0]);
+    }
+
+    public function findAllDeleted(): array
+    {
+        $deletedBirds = BirdModel::archived()->get();
+        return $deletedBirds->map(fn($model) => $this->createBirdFromModel($model))->all();
     }
 
     private function createBirdFromModel(BirdModel $model): Bird

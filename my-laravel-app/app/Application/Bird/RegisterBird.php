@@ -58,11 +58,7 @@ class RegisterBird
     {
         return $this->birdRepository->findById($id);
     }
-    public function delete(string $id)
-    {
-
-        $this->birdRepository->delete($id);
-    }
+   
     public function findAll(): array
     {
         return $this->birdRepository->findAll();
@@ -75,5 +71,19 @@ class RegisterBird
             'match' => $results['match'] ? $results['match'] : null,
             'related' => $results['related'] ?? []
         ];
+    }
+    public function softDelete(string $id): void
+    {
+        $this->birdRepository->softDelete($id);
+    }
+
+    public function restore(string $id): void
+    {
+        $this->birdRepository->restore($id);
+    }
+
+    public function findAllDeleted(): array
+    {
+        return $this->birdRepository->findAllDeleted();
     }
 }

@@ -2,7 +2,7 @@ $(document).ready(function() {
     const WorkerManagement = {
         init: function() {
             this.bindEvents();
-            console.log('Worker Management initialized');
+            
         },
 
         bindEvents: function() {
@@ -13,6 +13,108 @@ $(document).ready(function() {
             $(document).on('click', '.search-result-item', function() {
                 const workerId = $(this).data('worker-id');
                 WorkerManagement.highlightAndScrollTo(workerId);
+            });
+
+            // Add Worker button click event
+            $('#addWorkerBtn').on('click', function() {
+                $('#addWorkerModal').show();
+            });
+
+            // Cancel button in Add Worker modal
+            $('#addWorkerModal').find('button[type="button"]').on('click', function() {
+                $('#addWorkerModal').hide();
+            });
+
+            // Close modal when clicking outside
+            $('#addWorkerModal').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).hide();
+                }
+            });
+
+            // Edit Worker button click event
+            $('.edit-worker-btn').on('click', function() {
+                const workerId = $(this).data('worker-id');
+                const name = $(this).data('name');
+                const position = $(this).data('position');
+                const image = $(this).data('image');
+
+                // Populate the edit form
+                $('#editWorkerForm').attr('action', `/workers/${workerId}`);
+                $('#editName').val(name);
+                $('#editPosition').val(position);
+                $('#editImagePreview').attr('src', `/storage/images/${image}`);
+
+                // Show the modal
+                $('#editWorkerModal').show();
+            });
+
+            // Cancel button in Edit Worker modal
+            $('#cancelEditWorker').on('click', function() {
+                $('#editWorkerModal').hide();
+            });
+
+            // Close edit modal when clicking outside
+            $('#editWorkerModal').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).hide();
+                }
+            });
+
+            // Preview image before upload in edit modal
+            $('#editImage').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#editImagePreview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Handle delete button clicks
+            $('.delete-worker-btn').on('click', function() {
+                const workerId = $(this).data('worker-id');
+                if (confirm('Are you sure you want to archive this worker?')) {
+                    $.ajax({
+                        url: `/workers/${workerId}`,
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                window.location.reload();
+                            }
+                        },
+                        error: function(error) {
+                            alert('Failed to archive worker');
+                        }
+                    });
+                }
+            });
+
+            // Handle restore button clicks (for archive page)
+            $('.restore-worker-btn').on('click', function() {
+                const workerId = $(this).data('worker-id');
+                if (confirm('Are you sure you want to restore this worker?')) {
+                    $.ajax({
+                        url: `/workers/${workerId}/restore`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                window.location.reload();
+                            }
+                        },
+                        error: function(error) {
+                            alert('Failed to restore worker');
+                        }
+                    });
+                }
             });
         },
 
