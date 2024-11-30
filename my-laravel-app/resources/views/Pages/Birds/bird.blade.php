@@ -56,9 +56,15 @@
                     <td class="px-6 py-4 whitespace-nowrap">{{ $bird->getBreed() }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $bird->getOwner() }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $bird->getHandler() }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button 
-                            class="edit-bird-btn text-indigo-600 hover:text-indigo-900"
+                            class="text-red-600 hover:text-red-900 delete-bird-btn mr-2"
+                            data-bird-id="{{ $bird->getId() }}"
+                        >
+                            Delete
+                        </button>
+                        <button 
+                            class="text-blue-600 hover:text-blue-900 edit-bird-btn"
                             data-bird-id="{{ $bird->getId() }}"
                             data-breed="{{ $bird->getBreed() }}"
                             data-owner="{{ $bird->getOwner() }}"
@@ -79,7 +85,8 @@
     @include('Modal.edit-bird-modal')
 </div>
 @endsection
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 @section('scripts')
     <script src="{{ asset('js/search-birds.js') }}"></script>
-@endsection
+@

@@ -54,9 +54,15 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $worker->getName() }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $worker->getPosition() }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button 
-                            class="edit-worker-btn text-indigo-600 hover:text-indigo-900"
+                            class="text-red-600 hover:text-red-900 delete-worker-btn mr-2"
+                            data-worker-id="{{ $worker->getId() }}"
+                        >
+                            Delete
+                        </button>
+                        <button 
+                            class="text-blue-600 hover:text-blue-900 edit-worker-btn"
                             data-worker-id="{{ $worker->getId() }}"
                             data-name="{{ $worker->getName() }}"
                             data-position="{{ $worker->getPosition() }}"

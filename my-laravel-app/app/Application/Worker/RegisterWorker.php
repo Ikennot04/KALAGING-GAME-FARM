@@ -74,4 +74,18 @@ class RegisterWorker
             'related' => $results['related'] ?? []
         ];
     }
+    public function softDelete(string $id): void
+    {
+        $this->workerRepository->softDelete($id);
+    }
+
+    public function restore(string $id): void
+    {
+        $this->workerRepository->restore($id);
+    }
+
+    public function findAllDeleted(): array
+    {
+        return $this->workerRepository->findAllDeleted();
+    }
 }

@@ -2,19 +2,148 @@ $(document).ready(function() {
     const BirdManagement = {
         init: function() {
             this.bindEvents();
-            console.log('Bird Management initialized with jQuery version:', $.fn.jquery);
+            
         },
 
         bindEvents: function() {
-            console.log('Binding search input event');
+            
             $('#searchInput').on('input', (e) => {
-                console.log('Search input changed:', e.target.value);
+                
                 this.performSearch();
             });
 
             $(document).on('click', '.search-result-item', function() {
                 const birdId = $(this).data('bird-id');
                 BirdManagement.highlightAndScrollTo(birdId);
+            });
+
+            $('#addBirdBtn').on('click', function() {
+                $('#addBirdModal').removeClass('hidden');
+            });
+
+            $('#cancelAddBird').on('click', function() {
+                $('#addBirdModal').addClass('hidden');
+                $('#imagePreview').addClass('hidden');
+            });
+
+            $('#image').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#imagePreview').attr('src', e.target.result).removeClass('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('.edit-bird-btn').on('click', function() {
+                const birdId = $(this).data('bird-id');
+                const breed = $(this).data('breed');
+                const owner = $(this).data('owner');
+                const handler = $(this).data('handler');
+                const image = $(this).data('image');
+
+                $('#editBirdForm').attr('action', `/birds/${birdId}`);
+                
+                $('#editBreed').val(breed);
+                $('#editOwner').val(owner);
+                $('#editHandler').val(handler);
+                if (image) {
+                    $('#editImagePreview').attr('src', `/storage/images/${image}`).removeClass('hidden');
+                }
+
+                $('#editBirdModal').removeClass('hidden');
+            });
+
+            $('#cancelEditBird').on('click', function() {
+                $('#editBirdModal').addClass('hidden');
+            });
+
+            $('#editImage').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#editImagePreview').attr('src', e.target.result).removeClass('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('.fixed').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).addClass('hidden');
+                }
+            });
+
+            $('#editBirdForm').on('submit', function(e) {
+                e.preventDefault();
+                const form = $(this);
+                const formData = new FormData(this);
+                formData.append('_method', 'PUT');
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.message) {
+                            $('#editBirdModal').addClass('hidden');
+                            window.location.reload();
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Update error:', error.responseJSON?.error || 'Unknown error occurred');
+                        alert(error.responseJSON?.error || 'Failed to update bird. Please try again.');
+                    }
+                });
+            });
+
+            // Handle delete button clicks
+            $('.delete-bird-btn').on('click', function() {
+                const birdId = $(this).data('bird-id');
+                if (confirm('Are you sure you want to archive this bird?')) {
+                    $.ajax({
+                        url: `/birds/${birdId}`,
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                window.location.reload();
+                            }
+                        },
+                        error: function(error) {
+                            alert('Failed to archive bird');
+                        }
+                    });
+                }
+            });
+
+            // Handle restore button clicks (for archive page)
+            $('.restore-bird-btn').on('click', function() {
+                const birdId = $(this).data('bird-id');
+                if (confirm('Are you sure you want to restore this bird?')) {
+                    $.ajax({
+                        url: `/birds/${birdId}/restore`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                window.location.reload();
+                            }
+                        },
+                        error: function(error) {
+                            alert('Failed to restore bird');
+                        }
+                    });
+                }
             });
         },
 
@@ -32,7 +161,7 @@ $(document).ready(function() {
                 url: `/birds/search?search=${encodeURIComponent(searchTerm)}&type=${isIdSearch ? 'id' : 'text'}`,
                 method: 'GET',
                 success: function(data) {
-                    console.log('Search results:', data); // Debug log
+                    
                     if (data.match || (data.related && data.related.length > 0)) {
                         const html = BirdManagement.buildSearchResultsHtml(data);
                         $('#searchResults').html(html).show();

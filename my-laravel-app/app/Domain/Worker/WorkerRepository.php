@@ -14,4 +14,10 @@ interface WorkerRepository
 
     public function findAll(): array;
     public function searchWorker(string $search): array;
+
+    public function softDelete(string $id): void;
+
+    public function restore(string $id): void;
+
+    public function findAllDeleted(): array;
 }
