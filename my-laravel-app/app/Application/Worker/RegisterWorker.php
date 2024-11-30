@@ -54,7 +54,18 @@ class RegisterWorker
 
     public function findByWorkerID(int $id)
     {
-        return $this->workerRepository->findByID($id);
+        try {
+            $worker = $this->workerRepository->findById($id);
+            
+            if (!$worker) {
+                return null;
+            }
+            
+            return $worker;
+        } catch (\Exception $e) {
+            \Log::error('Error finding worker: ' . $e->getMessage());
+            throw $e;
+        }
     }
     public function delete(string $id)
     {
