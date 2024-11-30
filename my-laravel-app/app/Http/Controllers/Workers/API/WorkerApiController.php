@@ -156,5 +156,39 @@ public function search(Request $request)
         }, $results['related'])
     ]);
 }
+public function getWorkerById($id)
+{
+    try {
+        $workerId = (int) $id;
+        
+        if ($workerId <= 0) {
+            return response()->json(['error' => 'Invalid worker ID'], 400);
+        }
 
+        $worker = $this->registerWorker->findByWorkerID($workerId);
+
+        if (!$worker) {
+            return response()->json(['error' => 'Worker not found'], 404);
+        }
+
+        $workerData = [
+            'id' => $worker->getId(),
+            'name' => $worker->getName(),
+            'position' => $worker->getPosition(),
+            'image' => $worker->getImage(),
+            'created_at' => $worker->getCreatedAt()
+        ];
+
+        return response()->json($workerData);
+    } catch (\Exception $e) {
+        \Log::error('Failed to fetch worker details: ' . $e->getMessage());
+        \Log::error($e->getTraceAsString());
+        
+        return response()->json([
+            'error' => 'Failed to fetch worker details',
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+}
 }

@@ -12,6 +12,7 @@ Route::get('/', [DashboardWebController::class, 'home'])->name('home');
 // Birds routes
 Route::get('/birds', [BirdWebController::class, 'viewBirdPage'])->name('birds.index');
 
+
 Route::get('/dashboard', [DashboardWebController::class, 'viewDashboard'])->name('dashboard');
 Route::put('/birds/{id}', [BirdWebController::class, 'updateBird'])->name('birds.update');
 Route::post('/bird/add', [BirdWebController::class, 'addBird'])->name('birds.add');
