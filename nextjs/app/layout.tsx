@@ -25,28 +25,33 @@ export default function RootLayout({
             className="rounded" // Optional: Add rounded corners to the GIF
           />
         </header>
+        
         {/* Navigation Bar */}
         <nav className="bg-white shadow-md py-2">
           <div className="container mx-auto flex justify-between items-center px-4">
             <ul className="flex space-x-6">
               <li>
-                <Link href="/" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                  BIRDS
+                <Link href="/" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                  <span className="material-icons text-lg">bird</span>
+                  <span>BIRDS</span>
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                  DASHBOARD
+                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                  <span className="material-icons text-lg">dashboard</span>
+                  <span>DASHBOARD</span>
                 </Link>
               </li>
               <li>
-                <Link href="/statistic" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                  STATISTIC
+                <Link href="/statistic" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                  <span className="material-icons text-lg">assessment</span>
+                  <span>STATISTIC</span>
                 </Link>
               </li>
               <li>
-                <Link href="/aboutus" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                  ABOUT US
+                <Link href="/aboutus" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                  <span className="material-icons text-lg">info</span>
+                  <span>ABOUT US</span>
                 </Link>
               </li>
             </ul>
@@ -65,6 +70,7 @@ export default function RootLayout({
             </form>
           </div>
         </nav>
+        
         <main className="py-8 px-4">{children}</main>
       </body>
     </html>
