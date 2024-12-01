@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Bird {
   id: number;
@@ -10,9 +11,10 @@ interface Bird {
 }
 
 const BirdList: React.FC = () => {
-  const [birds, setBirds] = useState<Bird[]>([]); // Initialize as an empty array
+  const router = useRouter();
+  const [birds, setBirds] = useState<Bird[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const itemsPerPage = 20;
@@ -20,7 +22,6 @@ const BirdList: React.FC = () => {
   useEffect(() => {
     const fetchBirds = async () => {
       try {
-        setLoading(true);
         const response = await fetch('http://localhost:8000/api/birds');
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
@@ -32,11 +33,17 @@ const BirdList: React.FC = () => {
         setError(err instanceof Error ? err.message : 'An unexpected error occurred');
         setBirds([]);
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
 
+    const interval = setInterval(() => {
+      fetchBirds();
+    }, 3000);
+
     fetchBirds();
+
+    return () => clearInterval(interval);
   }, []);
 
   const totalPages = Math.ceil(birds.length / itemsPerPage);
@@ -48,7 +55,11 @@ const BirdList: React.FC = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const selectedBirds = birds.slice(startIndex, startIndex + itemsPerPage);
 
-  if (loading) {
+  const handleBirdClick = (birdId: number) => {
+    router.push(`/birds/${birdId}`);
+  };
+
+  if (initialLoading) {
     return <div className="text-center mt-8">Loading birds...</div>;
   }
 
@@ -63,13 +74,13 @@ const BirdList: React.FC = () => {
         {selectedBirds.map((bird) => (
           <div
             key={bird.id}
-            className="border rounded-lg overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow"
+            onClick={() => handleBirdClick(bird.id)}
+            className="border rounded-lg overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow cursor-pointer"
           >
             <img
               src={`http://localhost:8000/storage/images/${bird.image}`}
               alt={`Bird owned by ${bird.owner}`}
               className="w-full h-48 object-cover"
-              
             />
             <div className="p-4">
               <p className="font-semibold text-center">{bird.owner}</p>
@@ -81,7 +92,7 @@ const BirdList: React.FC = () => {
         ))}
       </div>
       <div className="flex justify-center mt-8">
-      {Array.from({ length: totalPages }, (_, index) => (
+        {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}

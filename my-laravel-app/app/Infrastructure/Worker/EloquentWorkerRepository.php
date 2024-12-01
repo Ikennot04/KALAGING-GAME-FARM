@@ -24,6 +24,23 @@ class EloquentWorkerRepository implements WorkerRepository
         $workerModel->updated_at = Carbon::now()->toDateTimeString();
         $workerModel->save();
     }
+    public function softDelete(string $id): void
+    {
+        WorkerModel::where('id', $id)
+            ->update(['deleted' => 1]);
+    }
+
+    public function restore(string $id): void
+    {
+        WorkerModel::where('id', $id)
+            ->update(['deleted' => 0]);
+    }
+
+    public function findAllDeleted(): array
+    {
+        $deletedWorkers = WorkerModel::archived()->get();
+        return $deletedWorkers->map(fn($model) => $this->createWorkerFromModel($model))->all();
+    }
     /**
      * Update Bird.
      * **/
@@ -60,9 +77,8 @@ class EloquentWorkerRepository implements WorkerRepository
     }
     public function findAll(): array
     {
-        return WorkerModel::all()
-            ->map(fn($model) => $this->createWorkerFromModel($model))
-            ->toArray();
+        $workers = WorkerModel::active()->get();
+        return $workers->map(fn($model) => $this->createWorkerFromModel($model))->all();
     }
     public function searchWorker(string $search): array
     {

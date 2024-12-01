@@ -145,5 +145,33 @@ public function search(Request $request)
     ]);
 }
 
+public function getBirdById($id)
+{
+    try {
+        $birdId = (int) $id;
+        $bird = $this->registerBird->findByBirdID($birdId);
+
+        if (!$bird) {
+            return response()->json(['error' => 'Bird not found'], 404);
+        }
+
+        // Convert bird object to array format
+        $birdData = [
+            'id' => $bird->getId(),
+            'owner' => $bird->getOwner(),
+            'image' => $bird->getImage(),
+            'handler' => $bird->getHandler(),
+            'breed' => $bird->getBreed(),
+            'created_at' => $bird->Created()
+        ];
+
+        return response()->json($birdData);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Failed to fetch bird details',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 
 }

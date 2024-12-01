@@ -54,7 +54,18 @@ class RegisterWorker
 
     public function findByWorkerID(int $id)
     {
-        return $this->workerRepository->findByID($id);
+        try {
+            $worker = $this->workerRepository->findById($id);
+            
+            if (!$worker) {
+                return null;
+            }
+            
+            return $worker;
+        } catch (\Exception $e) {
+            \Log::error('Error finding worker: ' . $e->getMessage());
+            throw $e;
+        }
     }
     public function delete(string $id)
     {
@@ -73,5 +84,19 @@ class RegisterWorker
             'match' => $results['match'] ? $results['match'] : null,
             'related' => $results['related'] ?? []
         ];
+    }
+    public function softDelete(string $id): void
+    {
+        $this->workerRepository->softDelete($id);
+    }
+
+    public function restore(string $id): void
+    {
+        $this->workerRepository->restore($id);
+    }
+
+    public function findAllDeleted(): array
+    {
+        return $this->workerRepository->findAllDeleted();
     }
 }

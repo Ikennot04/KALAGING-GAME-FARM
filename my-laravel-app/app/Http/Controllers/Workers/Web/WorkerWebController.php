@@ -130,4 +130,54 @@ class WorkerWebController extends Controller
         }, $results['related'])
         ]);
     }
+    public function softDelete(string $id): void
+{
+        WorkerModel::where('id', $id)
+        ->update(['deleted' => 1]);
+}
+
+public function restore(string $id): void
+{
+    WorkerModel::where('id', $id)
+        ->update(['deleted' => 0]);
+}
+
+public function findAllDeleted(): array
+{
+    $deletedWorkers = WorkerModel::deleted()->get();
+    return $deletedWorkers->map(fn($model) => $this->createWorkerFromModel($model))->all();
+}
+
+public function findAll(): array
+{
+    // Only return non-deleted birds
+    $workers = WorkerModel::active()->get();
+        return $workers->map(fn($model) => $this->createWorkerFromModel($model))->all();
+    }
+
+    public function softDeleteWorker($id)
+    {
+        try {
+            $this->registerWorker->softDelete($id);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete worker'], 500);
+        }
+    }
+
+    public function viewArchive()
+    {
+        $archivedWorkers = $this->registerWorker->findAllDeleted();
+        return view('Pages.Archive.worker-archive', ['workers' => $archivedWorkers]);
+    }
+
+    public function restoreWorker($id)
+    {
+        try {
+            $this->registerWorker->restore($id);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to restore worker'], 500);
+        }
+    }
 }

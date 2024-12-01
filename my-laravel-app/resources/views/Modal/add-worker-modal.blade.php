@@ -22,11 +22,14 @@
             
             <div class="mb-4">
                 <label for="position" class="block text-sm font-medium text-gray-700 mb-2">Position</label>
-                <input type="text" 
-                       id="position" 
-                       name="position"
-                       required 
-                       class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <select id="position" 
+                        name="position" 
+                        required 
+                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select Position</option>
+                    <option value="Senior Handler">Senior Handler</option>
+                    <option value="Junior Handler">Junior Handler</option>
+                </select>
             </div>
             
             <div class="mb-4">
