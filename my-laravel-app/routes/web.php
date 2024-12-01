@@ -36,3 +36,6 @@ Route::get('/dashboard/stats', [DashboardWebController::class, 'getDashboardStat
 Route::get('/workers/archive', [WorkerWebController::class, 'viewArchive'])->name('workers.archive');
 Route::post('/workers/{id}/restore', [WorkerWebController::class, 'restoreWorker'])->name('workers.restore');
 Route::delete('/workers/{id}', [WorkerWebController::class, 'softDeleteWorker'])->name('workers.delete');
+
+// Handler stats route
+Route::get('/handler-stats', [WorkerWebController::class, 'showHandlerStats'])->name('handler.stats'); 

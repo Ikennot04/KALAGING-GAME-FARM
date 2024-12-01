@@ -10,7 +10,11 @@ interface Bird {
   created_at: string;
 }
 
-const BirdList: React.FC = () => {
+interface BirdListProps {
+  sortBy?: string;
+}
+
+const BirdList: React.FC<BirdListProps> = ({ sortBy = 'newest' }) => {
   const router = useRouter();
   const [birds, setBirds] = useState<Bird[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -53,7 +57,36 @@ const BirdList: React.FC = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const selectedBirds = birds.slice(startIndex, startIndex + itemsPerPage);
+
+  const sortBirds = (birdsToSort: any[]) => {
+    switch (sortBy) {
+      case 'newest':
+        return [...birdsToSort].sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      case 'oldest':
+        return [...birdsToSort].sort((a, b) => 
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      case 'breed':
+        return [...birdsToSort].sort((a, b) => 
+          a.breed.localeCompare(b.breed)
+        );
+      case 'owner':
+        return [...birdsToSort].sort((a, b) => 
+          a.owner.localeCompare(b.owner)
+        );
+      case 'handler':
+        return [...birdsToSort].sort((a, b) => 
+          a.handler.localeCompare(b.handler)
+        );
+      default:
+        return birdsToSort;
+    }
+  };
+
+  const sortedBirds = sortBirds(birds);
+  const selectedBirds = sortedBirds.slice(startIndex, startIndex + itemsPerPage);
 
   const handleBirdClick = (birdId: number) => {
     router.push(`/birds/${birdId}`);

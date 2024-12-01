@@ -12,7 +12,7 @@
                     </a>
                     <a href="{{ route('workers.index') }}" 
                        class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('workers.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-                        Workers
+                        Handlers
                     </a>
                     <a href="{{ route('birds.index') }}" 
                        class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('birds.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
@@ -24,7 +24,7 @@
                     </a>
                     <a href="{{ route('workers.archive') }}" 
                        class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('workers.archive') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-                        Archived Workers
+                        Archived Handlers
                     </a>
                 </div>
             </div>

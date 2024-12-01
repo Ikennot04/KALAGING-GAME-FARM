@@ -12,11 +12,11 @@ class WorkerModel extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('deleted', false);
+        return $query->where('deleted', 0);
     }
 
     public function scopeArchived($query)
     {
-        return $query->where('deleted', true);
+        return $query->where('deleted', 1);
     }
 }

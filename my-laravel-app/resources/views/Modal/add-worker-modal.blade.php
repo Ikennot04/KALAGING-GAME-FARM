@@ -3,11 +3,7 @@
     <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
         <h3 class="text-lg font-semibold mb-4">Add New Worker</h3>
         
-        <!-- Debug Panel -->
-        <div class="mb-4 p-2 bg-gray-100 rounded text-xs">
-            <p><strong>Form State:</strong></p>
-            <pre id="formStateDebug"></pre>
-        </div>
+       
 
         <form id="addWorkerForm" action="{{ route('workers.add') }}" method="POST" enctype="multipart/form-data">
             @csrf

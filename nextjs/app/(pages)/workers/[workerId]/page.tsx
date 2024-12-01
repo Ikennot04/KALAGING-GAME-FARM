@@ -25,12 +25,12 @@ export default function WorkerDetails({
             try {
                 const response = await fetch(`http://localhost:8000/api/workers/${params.workerId}`);
                 if (!response.ok) {
-                    throw new Error('Worker not found');
+                    throw new Error('Handler not found');
                 }
                 const data = await response.json();
                 setWorker(data);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load worker details');
+                setError(err instanceof Error ? err.message : 'Failed to load handler details');
             } finally {
                 setLoading(false);
             }
@@ -40,11 +40,11 @@ export default function WorkerDetails({
     }, [params.workerId]);
 
     if (loading) {
-        return <div className="p-8">Loading worker details...</div>;
+        return <div className="p-8">Loading handler details...</div>;
     }
 
     if (error || !worker) {
-        return <div className="p-8 text-red-500">Error: {error || 'Worker not found'}</div>;
+        return <div className="p-8 text-red-500">Error: {error || 'Handler not found'}</div>;
     }
 
     return (
@@ -57,7 +57,7 @@ export default function WorkerDetails({
                     ← Back to List
                 </button>
                 
-                <h1 className="text-3xl font-bold mb-6">Worker Details</h1>
+                <h1 className="text-3xl font-bold mb-6">Handler Details</h1>
                 
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <div className="flex flex-col md:flex-row gap-8">
