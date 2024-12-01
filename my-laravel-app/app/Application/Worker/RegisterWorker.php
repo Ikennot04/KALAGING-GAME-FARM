@@ -99,4 +99,14 @@ class RegisterWorker
     {
         return $this->workerRepository->findAllDeleted();
     }
+
+    public function getBirdCount(string $handlerName): int
+    {
+        return $this->workerRepository->countBirdsByHandler($handlerName);
+    }
+
+    public function getHandlerStats(): array
+    {
+        return $this->workerRepository->getHandlerStats();
+    }
 }

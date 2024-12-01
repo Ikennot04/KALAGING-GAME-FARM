@@ -85,4 +85,5 @@
 
 @section('scripts')
     <script src="{{ asset('js/worker-management.js') }}"></script>
+    
 @endsection
