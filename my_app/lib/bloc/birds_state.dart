@@ -10,6 +10,8 @@ abstract class BirdState extends Equatable {
 
 class BirdInitial extends BirdState {}
 
+class BirdLoading extends BirdState {}
+
 class BirdLoaded extends BirdState {
   final List<Bird> birds;
 
@@ -17,4 +19,13 @@ class BirdLoaded extends BirdState {
 
   @override
   List<Object> get props => [birds];
+}
+
+class BirdError extends BirdState {
+  final String message;
+
+  const BirdError({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }
