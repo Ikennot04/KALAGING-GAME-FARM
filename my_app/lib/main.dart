@@ -3,9 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_app/bloc/birds_bloc.dart';
 import 'package:my_app/bloc/birds_event.dart';
 import 'package:my_app/bloc/birds_state.dart';
+import 'package:my_app/repositories/bird_repository.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => BirdBloc(
+            repository: BirdRepository(),
+          )..add(LoadBirds()),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,10 +29,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: BlocProvider(
-        create: (context) => BirdBloc()..add(LoadBirds()),
-        child: BirdScreen(),
-      ),
+      home: BirdScreen(),
     );
   }
 }
@@ -32,12 +41,13 @@ class BirdScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Birds'),
         centerTitle: true,
-        
       ),
       body: BlocBuilder<BirdBloc, BirdState>(
         builder: (context, state) {
-          if (state is BirdInitial) {
+          if (state is BirdLoading) {
             return Center(child: CircularProgressIndicator());
+          } else if (state is BirdError) {
+            return Center(child: Text(state.message));
           } else if (state is BirdLoaded) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -51,15 +61,31 @@ class BirdScreen extends StatelessWidget {
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16.0),
                       title: Text(
-                        bird.description,
+                        bird.breed,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(bird.owner),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Owner: ${bird.owner}'),
+                          Text('Handler: ${bird.handler}'),
+                        ],
+                      ),
                       leading: ClipOval(
                         child: SizedBox(
                           height: 50,
                           width: 50,
-                          child: bird.image,
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/placeholder.png',
+                            image: 'http://localhost:8000/storage/images/${bird.image}',
+                            fit: BoxFit.cover,
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[200],
+                                child: Icon(Icons.broken_image, color: Colors.grey[400]),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),

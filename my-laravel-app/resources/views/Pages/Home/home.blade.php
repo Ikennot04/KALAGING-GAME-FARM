@@ -4,11 +4,18 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-4xl font-bold text-center text-gray-900 mb-8">Welcome to KGFs ADMIN </h1>
-    
+    <h1 class="text-4xl font-bold text-center text-gray-900 mb-8">Welcome to KGFs ADMIN</h1>
+
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-semibold text-gray-900">Overview Statistics</h2>
+        </div>
+        <canvas id="statsChart" class="w-full h-64"></canvas>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <a href="{{ route('workers.index') }}" 
-           class="transform hover:scale-105 transition-transform duration-200">
+        <!-- Handlers Management Section -->
+        <a href="{{ route('workers.index') }}" class="transform hover:scale-105 transition-transform duration-200">
             <div class="bg-white rounded-lg shadow-md hover:shadow-lg p-6">
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">Handlers Management</h2>
                 <div class="flex justify-between items-center">
@@ -22,8 +29,8 @@
             </div>
         </a>
         
-        <a href="{{ route('birds.index') }}" 
-           class="transform hover:scale-105 transition-transform duration-200">
+        <!-- Birds Management Section -->
+        <a href="{{ route('birds.index') }}" class="transform hover:scale-105 transition-transform duration-200">
             <div class="bg-white rounded-lg shadow-md hover:shadow-lg p-6">
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">Birds Management</h2>
                 <div class="flex justify-between items-center">
@@ -42,7 +49,7 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-semibold text-gray-900 mb-4">Handler Statistics</h2>
         <div class="overflow-x-auto">
-            <table class="min-w-full">
+            <table class="min-w-full bg-white rounded-lg shadow-md">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
@@ -50,7 +57,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Birds Handled</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200">
                     @foreach($handlerStats as $stat)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -78,3 +85,44 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Handlers', 'Birds'],
+                datasets: [{
+                    label: 'Total Count',
+                    data: [{{ $workerCount }}, {{ $birdCount }}],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.5)',  // Blue color for Handlers
+                        'rgba(16, 185, 129, 0.5)'   // Green color for Birds
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)', 
+                        'rgba(16, 185, 129, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+@endpush

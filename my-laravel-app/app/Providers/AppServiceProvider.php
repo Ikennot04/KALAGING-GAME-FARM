@@ -18,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(BirdRepository::class, EloquentBirdRepository::class);
         $this->app->bind(WorkerRepository::class, EloquentWorkerRepository::class);
+        $this->app->bind(AdminRepository::class, EloquentAdminRepository::class);
     }
 
     /**

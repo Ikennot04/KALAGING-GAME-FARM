@@ -1,4 +1,5 @@
 <nav class="bg-gray-800 shadow-lg">
+    @auth
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-8">
@@ -26,9 +27,23 @@
                        class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('workers.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
                         Archived Handlers
                     </a>
+                    <a href="{{ route('settings') }}" 
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('settings') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
+                        Settings
+                    </a>
                 </div>
             </div>
             
+            <div class="flex items-center space-x-4">
+                <span class="text-white">{{ Auth::user()->name }}</span>
+                <form action="{{ route('admin.logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-white hover:text-gray-300">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
             <!-- Mobile menu button -->
             <div class="md:hidden">
                 <button type="button" class="mobile-menu-button p-2 rounded-md text-white hover:bg-gray-600 focus:outline-none">
@@ -39,30 +54,7 @@
             </div>
         </div>
     </div>
-    
-    <!-- Mobile menu -->
-    <div class="mobile-menu hidden md:hidden bg-gray-800">
-        <a href="{{ route('home') }}" 
-           class="block px-4 py-3 text-sm text-white {{ request()->routeIs('home') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
-            Dashboard
-        </a>
-        <a href="{{ route('workers.index') }}" 
-           class="block px-4 py-3 text-sm text-white {{ request()->routeIs('workers.*') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
-            Workers
-        </a>
-        <a href="{{ route('birds.index') }}" 
-           class="block px-4 py-3 text-sm text-white {{ request()->routeIs('birds.*') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
-            Birds
-        </a>
-        <a href="{{ route('birds.archive') }}" 
-           class="block px-4 py-3 text-sm text-white {{ request()->routeIs('birds.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
-            Archived Birds
-        </a>
-        <a href="{{ route('workers.archive') }}" 
-           class="block px-4 py-3 text-sm text-white {{ request()->routeIs('workers.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
-            Archived Workers
-        </a>
-    </div>
+    @endauth
 </nav>
 
 <script>
