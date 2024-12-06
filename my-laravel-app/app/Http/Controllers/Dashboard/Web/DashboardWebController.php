@@ -22,7 +22,8 @@ class DashboardWebController extends Controller
     {
         $birdCount = $this->getBirdCount();
         $workerCount = $this->getWorkerCount();
-        return view('Pages.Home.home', ['birdCount' => $birdCount, 'workerCount' => $workerCount]);
+        $handlerStats = $this->registerWorker->getHandlerStats();
+        return view('Pages.Home.home', ['birdCount' => $birdCount, 'workerCount' => $workerCount, 'handlerStats' => $handlerStats]);
     }
 
     public function getBirdCount(): int
@@ -45,5 +46,9 @@ class DashboardWebController extends Controller
         'birdCount' => $birdCount,
         'workerCount' => $workerCount
     ], 200);
-}
+    }
+
+        
+     
+    
 }

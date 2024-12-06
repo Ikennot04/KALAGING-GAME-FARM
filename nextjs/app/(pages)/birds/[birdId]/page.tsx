@@ -41,52 +41,55 @@ export default function BirdDetails({
     }, [params.birdId]);
 
     if (loading) {
-        return <div className="p-8">Loading bird details...</div>;
+        return <div className="p-8 text-center text-white">Loading bird details...</div>;
     }
 
     if (error || !bird) {
-        return <div className="p-8 text-red-500">Error: {error || 'Bird not found'}</div>;
+        return <div className="p-8 text-center text-red-500">Error: {error || 'Bird not found'}</div>;
     }
 
     return (
-        <div className="p-8">
-            <div className="max-w-4xl mx-auto">
+        <div className="p-8 bg-gradient-to-r from-blue-400 to-blue-600 min-h-screen">
+            <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                {/* Back Button */}
                 <button 
                     onClick={() => router.back()} 
-                    className="mb-4 text-blue-500 hover:text-blue-700"
+                    className="mb-4 text-blue-500 hover:text-blue-700 font-medium flex items-center space-x-2"
                 >
-                    ← Back to List
+                    <span>← Back to List</span>
                 </button>
-                
-                <h1 className="text-3xl font-bold mb-6">Bird Details</h1>
-                
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        <div className="md:w-1/2">
-                            <img
-                                src={`http://localhost:8000/storage/images/${bird.image}`}
-                                alt={`Bird owned by ${bird.owner}`}
-                                className="w-full h-auto rounded-lg object-cover"
-                            />
+
+                {/* Title */}
+                <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Bird Details</h1>
+
+                {/* Bird Details Section */}
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* Image Section */}
+                    <div className="md:w-1/2">
+                        <img
+                            src={`http://localhost:8000/storage/images/${bird.image}`}
+                            alt={`Bird owned by ${bird.owner}`}
+                            className="w-full h-auto rounded-lg object-cover shadow-md"
+                        />
+                    </div>
+
+                    {/* Details Section */}
+                    <div className="md:w-1/2 space-y-4">
+                        <div className="flex items-center">
+                            <span className="font-bold text-gray-700 w-24">Breed:</span>
+                            <span className="text-gray-600">{bird.breed}</span>
                         </div>
-                        
-                        <div className="md:w-1/2 space-y-4">
-                            <div>
-                                <span className="font-bold text-gray-700">Breed:</span>
-                                <span className="ml-2">{bird.breed}</span>
-                            </div>
-                            <div>
-                                <span className="font-bold text-gray-700">Owner:</span>
-                                <span className="ml-2">{bird.owner}</span>
-                            </div>
-                            <div>
-                                <span className="font-bold text-gray-700">Handler:</span>
-                                <span className="ml-2">{bird.handler}</span>
-                            </div>
-                            <div>
-                                <span className="font-bold text-gray-700">Created:</span>
-                                <span className="ml-2">{new Date(bird.created_at).toLocaleDateString()}</span>
-                            </div>
+                        <div className="flex items-center">
+                            <span className="font-bold text-gray-700 w-24">Owner:</span>
+                            <span className="text-gray-600">{bird.owner}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="font-bold text-gray-700 w-24">Handler:</span>
+                            <span className="text-gray-600">{bird.handler}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="font-bold text-gray-700 w-24">Created:</span>
+                            <span className="text-gray-600">{new Date(bird.created_at).toLocaleDateString()}</span>
                         </div>
                     </div>
                 </div>

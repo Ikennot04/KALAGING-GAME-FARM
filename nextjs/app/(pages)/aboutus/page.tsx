@@ -1,81 +1,14 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useWorkers } from '@/app/hooks/Gethooks';
 import { useRouter } from 'next/navigation';
-
-interface Worker {
-    id: string;
-    name: string;
-    position: string;
-    image: string;
-    created_at: string;
-    updated_at: string;
-    deleted: boolean;
-}
-
-interface CarouselImage {
-    id: string;
-    src: string;
-    description: string;
-}
+import { WorkerCarousel } from '@/app/Components/page';
 
 function AboutUs() {
     const [currentWorker, setCurrentWorker] = useState(0);
     const [currentImage, setCurrentImage] = useState(0);
-    const [workers, setWorkers] = useState<Worker[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { workers, loading, error } = useWorkers();
     const router = useRouter();
-
-    // Fetch workers from API
-    useEffect(() => {
-        // Initial fetch
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/workers', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch workers');
-                }
-
-                const data = await response.json();
-                const activeWorkers = data.workers.filter((worker: Worker) => 
-                    worker && 
-                    !worker.deleted && 
-                    worker.image
-                );
-
-                if (activeWorkers.length === 0) {
-                    throw new Error('No active workers found');
-                }
-
-                setWorkers(activeWorkers);
-                setCurrentWorker(0);
-                setCurrentImage(0);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setError('Failed to load content');
-                setLoading(false);
-            }
-        };
-
-        // Set up interval to fetch data every second
-        const interval = setInterval(() => {
-            fetchData();
-        }, 3000); // 1000ms = 1 second
-
-        // Initial fetch
-        fetchData();
-
-        // Cleanup interval on component unmount
-        return () => clearInterval(interval);
-    }, []); // Empty dependency array means this effect runs once on mount
 
     // Auto-rotate background images
     useEffect(() => {
@@ -107,7 +40,7 @@ function AboutUs() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-500"></div>
             </div>
         );
     }
@@ -140,105 +73,39 @@ function AboutUs() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/40"></div>
 
             <div className="relative z-10 flex flex-col items-center justify-center py-10 px-4">
-                <div className="max-w-4xl w-full bg-white/90 p-8 rounded-lg shadow-lg mb-10">
-                    <div className="flex items-center justify-center mb-6">
+                <div className="max-w-4xl w-full bg-white/80 p-10 rounded-lg shadow-xl mb-12">
+                    <div className="flex items-center justify-center mb-8">
                         <img 
                             src="/SEKIN.gif" 
                             alt="Logo Animation"
-                            className="rounded mr-4 w-[200px] h-[250px]" 
+                            className="rounded-lg mr-4 w-[220px] h-[260px]" 
                         />
                     </div>
-                    <p className="text-lg mb-6 text-gray-800 text-center">
-                        Welcome to <span className="font-bold text-blue-600">KALAGING GAMEFARM</span>! 
+                    <p className="text-lg mb-8 text-gray-900 text-center font-serif">
+                        Welcome to <span className="font-bold text-indigo-600">KALAGING GAMEFARM</span>! 
                         We are passionate about breeding and nurturing high-quality cockfighting birds.
                     </p>
-                    <h2 className="text-3xl font-semibold mb-4 text-blue-600 text-center">Our Mission</h2>
-                    <p className="text-md mb-4 text-gray-700 text-center">
+                    <h2 className="text-4xl font-semibold mb-6 text-indigo-700 text-center">
+                        Our Mission
+                    </h2>
+                    <p className="text-md mb-6 text-gray-800 text-center font-serif">
                         Our mission is to create a sustainable and ethical breeding environment, 
                         promoting responsible practices while supporting a community of breeders.
                     </p>
                 </div>
 
-                <div className="max-w-4xl w-full bg-white/90 p-8 rounded-lg shadow-lg">
-                    <h2 className="text-4xl font-bold mb-6 text-blue-800 text-center">Meet Our Team</h2>
+                <div className="max-w-4xl w-full bg-white/80 p-10 rounded-lg shadow-xl">
+                    <h2 className="text-5xl font-bold mb-8 text-indigo-800 text-center">
+                        Meet Our Handlers
+                    </h2>
                     
-                    <div className="flex items-center justify-center space-x-4">
-                        {workers.length > 1 && (
-                            <button
-                                onClick={handleBackWorker}
-                                className="text-4xl text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                            >
-                                &lt;
-                            </button>
-                        )}
-
-                        {workers.length > 0 && (
-                            <>
-                                {workers.length > 1 && (
-                                    <div className="opacity-70 transition-opacity duration-300 hover:opacity-100">
-                                        <img
-                                            src={`http://127.0.0.1:8000/storage/images/${workers[(currentWorker - 1 + workers.length) % workers.length].image}`}
-                                            alt={workers[(currentWorker - 1 + workers.length) % workers.length].name}
-                                            className="rounded-full shadow-lg w-[150px] h-[150px] object-cover"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.src = '/default-avatar.png';
-                                            }}
-                                        />
-                                        <h3 className="text-sm mt-2 text-center">
-                                            {workers[(currentWorker - 1 + workers.length) % workers.length].name}
-                                        </h3>
-                                    </div>
-                                )}
-
-                                {/* Current Worker - always show */}
-                                <div 
-                                    className="transform scale-110 transition-transform duration-300 cursor-pointer"
-                                    onClick={() => handleWorkerClick(parseInt(workers[currentWorker].id))}
-                                >
-                                    <img
-                                        src={`http://127.0.0.1:8000/storage/images/${workers[currentWorker].image}`}
-                                        alt={workers[currentWorker].name}
-                                        className="rounded-full shadow-lg w-[200px] h-[200px] object-cover"
-                                        onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            target.src = '/default-avatar.png';
-                                        }}
-                                    />
-                                    <h3 className="text-xl font-bold mt-4 text-center text-blue-600">
-                                        {workers[currentWorker].name}
-                                    </h3>
-                                    <p className="text-gray-600 text-center">{workers[currentWorker].position}</p>
-                                </div>
-
-                                {workers.length > 1 && (
-                                    <div className="opacity-70 transition-opacity duration-300 hover:opacity-100">
-                                        <img
-                                            src={`http://127.0.0.1:8000/storage/images/${workers[(currentWorker + 1) % workers.length].image}`}
-                                            alt={workers[(currentWorker + 1) % workers.length].name}
-                                            className="rounded-full shadow-lg w-[150px] h-[150px] object-cover"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.src = '/default-avatar.png';
-                                            }}
-                                        />
-                                        <h3 className="text-sm mt-2 text-center">
-                                            {workers[(currentWorker + 1) % workers.length].name}
-                                        </h3>
-                                    </div>
-                                )}
-                            </>
-                        )}
-
-                        {workers.length > 1 && (
-                            <button
-                                onClick={handleNextWorker}
-                                className="text-4xl text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                            >
-                                &gt;
-                            </button>
-                        )}
-                    </div>
+                    <WorkerCarousel 
+                        workers={workers}
+                        currentWorker={currentWorker}
+                        onNextWorker={handleNextWorker}
+                        onBackWorker={handleBackWorker}
+                        onWorkerClick={handleWorkerClick}
+                    />
                 </div>
             </div>
         </div>

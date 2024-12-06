@@ -23,6 +23,7 @@ class EloquentBirdRepository implements BirdRepository
         $birdModel->handler = $bird->getHandler();
         $birdModel->created_at = Carbon::now()->toDateTimeString();
         $birdModel->updated_at = Carbon::now()->toDateTimeString();
+        $birdModel->deleted = 0;
         $birdModel->save();
     }
     /**

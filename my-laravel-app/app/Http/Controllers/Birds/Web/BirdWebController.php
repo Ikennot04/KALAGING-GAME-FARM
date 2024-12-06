@@ -80,33 +80,34 @@ class BirdWebController extends Controller
         }
     }
     public function addBird(Request $request)
-    {
-        $validated = $request->validate([
-            'owner' => 'required|string',
-            'handler' => 'required|string',
-            'breed' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+{
+    $validated = $request->validate([
+        'owner' => 'required|string',
+        'handler' => 'required|string',
+        'breed' => 'required|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
 
-        $imageName = 'default.jpg';
+    $imageName = 'default.jpg';
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
-            Storage::disk('public')->putFileAs('images', $image, $imageName);
-        }
-
-        $this->registerBird->create(
-            $request->owner,
-            $request->handler,
-            $imageName,
-            $request->breed,
-            now()->toDateTimeString(),
-            now()->toDateTimeString()
-        );
-
-        return response()->json(['message' => 'Bird created successfully'], 201);
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
+        Storage::disk('public')->putFileAs('images', $image, $imageName);
     }
+
+    $this->registerBird->create(
+        $request->owner,
+        $request->handler,
+        $imageName,
+        $request->breed,
+        now()->toDateTimeString(),
+        now()->toDateTimeString(),
+        false  // Add this parameter for the deleted field
+    );
+
+    return response()->json(['message' => 'Bird created successfully'], 201);
+}
 
     /**
      * Validate the new ID (it must be unique in the table)

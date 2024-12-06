@@ -32,26 +32,32 @@ class WorkerWebController extends Controller
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
+           
+
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-\.]/', '', $image->getClientOriginalName());
                 Storage::disk('public')->putFileAs('images', $image, $imageName);
             }
+            Log::info('Before worker creation',[
+                'name' => $validated['name'],
+                'position' => $validated['position'],
+                'image' => $imageName ?? 'default.jpg'
+            ]);
 
             $this->registerWorker->create(
                 $validated['name'],
                 $validated['position'],
                 $imageName ?? 'default.jpg',
                 now()->toDateTimeString(),
-                now()->toDateTimeString()
+                now()->toDateTimeString(),
+                false  // Add this parameter for the deleted field
             );
-
-            if ($request->wantsJson()) {
-                return response()->json(['message' => 'Worker added successfully'], 201);
-            }
+           
 
             return redirect()->back()->with('success', 'Worker added successfully');
         } catch (\Exception $e) {
+            
             if ($request->wantsJson()) {
                 return response()->json(['error' => $e->getMessage()], 500);
             }
@@ -179,5 +185,11 @@ public function findAll(): array
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to restore worker'], 500);
         }
+    }
+
+    public function showHandlerStats()
+    {
+        $handlerStats = $this->registerWorker->getHandlerStats();
+        return view('Pages.Worker.handler-stats', ['stats' => $handlerStats]);
     }
 }

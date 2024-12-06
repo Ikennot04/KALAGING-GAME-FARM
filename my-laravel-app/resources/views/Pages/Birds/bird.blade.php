@@ -89,4 +89,4 @@
 
 @section('scripts')
     <script src="{{ asset('js/search-birds.js') }}"></script>
-@
+@endsection

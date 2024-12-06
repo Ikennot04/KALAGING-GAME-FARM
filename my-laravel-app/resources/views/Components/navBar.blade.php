@@ -1,37 +1,52 @@
-<nav class="bg-white shadow-lg">
+<nav class="bg-gray-800 shadow-lg">
+    @auth
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-8">
                 <a href="{{ route('home') }}" class="flex items-center space-x-2">
-                    <span class="text-xl font-bold text-gray-800">Management System</span>
+                    <span class="text-2xl font-bold text-white hover:text-gray-300 transition duration-300">KALAGING GAMEFARM</span>
                 </a>
-                <div class="hidden md:flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-6">
                     <a href="{{ route('home') }}" 
-                       class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('home') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('home') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
                         Dashboard
                     </a>
                     <a href="{{ route('workers.index') }}" 
-                       class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('workers.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-                        Workers
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('workers.*') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
+                        Handlers
                     </a>
                     <a href="{{ route('birds.index') }}" 
-                       class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('birds.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('birds.*') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
                         Birds
                     </a>
                     <a href="{{ route('birds.archive') }}" 
-                       class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('birds.archive') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('birds.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
                         Archived Birds
                     </a>
                     <a href="{{ route('workers.archive') }}" 
-                       class="nav-link px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('workers.archive') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-                        Archived Workers
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('workers.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
+                        Archived Handlers
+                    </a>
+                    <a href="{{ route('settings') }}" 
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('settings') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
+                        Settings
                     </a>
                 </div>
             </div>
             
+            <div class="flex items-center space-x-4">
+                <span class="text-white">{{ Auth::user()->name }}</span>
+                <form action="{{ route('admin.logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-white hover:text-gray-300">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
             <!-- Mobile menu button -->
             <div class="md:hidden">
-                <button type="button" class="mobile-menu-button p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none">
+                <button type="button" class="mobile-menu-button p-2 rounded-md text-white hover:bg-gray-600 focus:outline-none">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -39,30 +54,7 @@
             </div>
         </div>
     </div>
-    
-    <!-- Mobile menu -->
-    <div class="mobile-menu hidden md:hidden">
-        <a href="{{ route('home') }}" 
-           class="block px-4 py-2 text-sm {{ request()->routeIs('home') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-            Dashboard
-        </a>
-        <a href="{{ route('workers.index') }}" 
-           class="block px-4 py-2 text-sm {{ request()->routeIs('workers.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-            Workers
-        </a>
-        <a href="{{ route('birds.index') }}" 
-           class="block px-4 py-2 text-sm {{ request()->routeIs('birds.*') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-            Birds
-        </a>
-        <a href="{{ route('birds.archive') }}" 
-           class="block px-4 py-2 text-sm {{ request()->routeIs('birds.archive') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-            Archived Birds
-        </a>
-        <a href="{{ route('workers.archive') }}" 
-           class="block px-4 py-2 text-sm {{ request()->routeIs('workers.archive') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">
-            Archived Workers
-        </a>
-    </div>
+    @endauth
 </nav>
 
 <script>

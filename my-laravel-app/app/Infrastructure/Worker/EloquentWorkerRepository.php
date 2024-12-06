@@ -5,6 +5,7 @@ namespace App\Infrastructure\Worker;
 use App\Domain\Worker\Worker;
 use App\Domain\Worker\WorkerRepository;
 use App\Infrastructure\Worker\WorkerModel;
+use App\Infrastructure\Bird\BirdModel;
 use Carbon\Carbon;
 
 class EloquentWorkerRepository implements WorkerRepository
@@ -22,6 +23,7 @@ class EloquentWorkerRepository implements WorkerRepository
         $workerModel->image = $worker->getImage();
         $workerModel->created_at = Carbon::now()->toDateTimeString();
         $workerModel->updated_at = Carbon::now()->toDateTimeString();
+        $workerModel->deleted = 0;
         $workerModel->save();
     }
     public function softDelete(string $id): void
@@ -113,5 +115,34 @@ class EloquentWorkerRepository implements WorkerRepository
             created_at: $model->created_at,
             updated_at: $model->updated_at
         );
+    }
+
+    public function countBirdsByHandler(string $handlerName): int
+    {
+        return BirdModel::where('handler', $handlerName)
+            ->where('deleted', 0)
+            ->count();
+    }
+
+    public function getHandlerStats(): array
+    {
+        $workers = WorkerModel::active()->get();
+        $stats = [];
+
+        foreach ($workers as $worker) {
+            $birdCount = BirdModel::where('handler', $worker->name)
+                ->where('deleted', 0)
+                ->count();
+                
+            $stats[] = [
+                'id' => $worker->id,
+                'name' => $worker->name,
+                'position' => $worker->position,
+                'image' => $worker->image,
+                'bird_count' => $birdCount
+            ];
+        }
+
+        return $stats;
     }
 }
