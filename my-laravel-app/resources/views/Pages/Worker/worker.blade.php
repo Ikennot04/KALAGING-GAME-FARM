@@ -76,6 +76,21 @@
             </tbody>
         </table>
     </div>
+    <!-- Archive Confirmation Modal -->
+<div id="archive-worker-modal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+        <h3 class="text-xl font-semibold text-gray-800">Confirm Archive</h3>
+        <p class="mt-2 text-sm text-gray-600">Are you sure you want to archive this worker?</p>
+        <div class="mt-4 flex justify-end">
+            <button id="cancel-worker-archive" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                Cancel
+            </button>
+            <button id="confirm-worker-archive" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                Archive
+            </button>
+        </div>
+        </div>
+    </div> 
 
     <!-- Modals -->
     @include('Modal.add-worker-modal')

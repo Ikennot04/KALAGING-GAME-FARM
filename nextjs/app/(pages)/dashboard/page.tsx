@@ -54,19 +54,7 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold text-gray-700 mb-6">Handlers</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                  <h3 className="text-xl font-semibold text-gray-700">Fausto</h3>
-                  <p className="text-xl font-semibold text-gray-700">35 Chickens</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                  <h3 className="text-xl font-semibold text-gray-700">Keiry</h3>
-                  <p className="text-xl font-semibold text-gray-700">80 Chickens</p>
-                </div>
-              </div>
-            </div>
+           
           </div>
         );
       case 'cockfights':

@@ -74,24 +74,45 @@ $(document).ready(function() {
             });
 
             // Handle delete button clicks
+            let workerIdToArchive = null;
+
             $('.delete-worker-btn').on('click', function() {
-                const workerId = $(this).data('worker-id');
-                if (confirm('Are you sure you want to archive this worker?')) {
-                    $.ajax({
-                        url: `/workers/${workerId}`,
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                window.location.reload();
-                            }
-                        },
-                        error: function(error) {
-                            alert('Failed to archive worker');
+                workerIdToArchive = $(this).data('worker-id');
+                $('#archive-worker-modal').removeClass('hidden');
+            });
+
+            // Handle modal cancel button
+            $('#cancel-worker-archive').on('click', function() {
+                $('#archive-worker-modal').addClass('hidden');
+                workerIdToArchive = null;
+            });
+
+            // Handle modal confirm button
+            $('#confirm-worker-archive').on('click', function() {
+                if (!workerIdToArchive) return;
+                
+                $.ajax({
+                    url: `/workers/${workerIdToArchive}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.reload();
                         }
-                    });
+                    },
+                    error: function(error) {
+                        alert('Failed to archive worker');
+                    }
+                });
+            });
+
+            // Close modal when clicking outside
+            $('#archive-worker-modal').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).addClass('hidden');
+                    workerIdToArchive = null;
                 }
             });
 
