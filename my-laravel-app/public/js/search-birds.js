@@ -103,24 +103,45 @@ $(document).ready(function() {
             });
 
             // Handle delete button clicks
+            let birdIdToArchive = null;
+
             $('.delete-bird-btn').on('click', function() {
-                const birdId = $(this).data('bird-id');
-                if (confirm('Are you sure you want to archive this bird?')) {
-                    $.ajax({
-                        url: `/birds/${birdId}`,
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                window.location.reload();
-                            }
-                        },
-                        error: function(error) {
-                            alert('Failed to archive bird');
+                birdIdToArchive = $(this).data('bird-id');
+                $('#archive-modal').removeClass('hidden');
+            });
+
+            // Handle modal cancel button
+            $('#cancel-archive').on('click', function() {
+                $('#archive-modal').addClass('hidden');
+                birdIdToArchive = null;
+            });
+
+            // Handle modal confirm button
+            $('#confirm-archive').on('click', function() {
+                if (!birdIdToArchive) return;
+                
+                $.ajax({
+                    url: `/birds/${birdIdToArchive}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.reload();
                         }
-                    });
+                    },
+                    error: function(error) {
+                        alert('Failed to archive bird');
+                    }
+                });
+            });
+
+            // Close modal when clicking outside
+            $('#archive-modal').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).addClass('hidden');
+                    birdIdToArchive = null;
                 }
             });
 

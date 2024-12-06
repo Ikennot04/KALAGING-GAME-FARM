@@ -42,30 +42,68 @@
         </table>
     </div>
 </div>
+
+<div id="restore-worker-modal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+        <h3 class="text-xl font-semibold text-gray-800">Confirm Restore</h3>
+        <p class="mt-2 text-sm text-gray-600">Are you sure you want to restore this worker?</p>
+        <div class="mt-4 flex justify-end">
+            <button id="cancel-worker-restore" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                Cancel
+            </button>
+            <button id="confirm-worker-restore" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 $(document).ready(function() {
+    let workerIdToRestore = null;
+
+    // Handle restore button clicks
     $('.restore-worker-btn').on('click', function() {
-        const workerId = $(this).data('worker-id');
-        if (confirm('Are you sure you want to restore this worker?')) {
-            $.ajax({
-                url: `/workers/${workerId}/restore`,
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        window.location.reload();
-                    }
-                },
-                error: function(error) {
-                    alert('Failed to restore worker');
+        workerIdToRestore = $(this).data('worker-id');
+        $('#restore-worker-modal').removeClass('hidden');
+    });
+
+    // Handle modal cancel button
+    $('#cancel-worker-restore').on('click', function() {
+        $('#restore-worker-modal').addClass('hidden');
+        workerIdToRestore = null;
+    });
+
+    // Handle modal confirm button
+    $('#confirm-worker-restore').on('click', function() {
+        if (!workerIdToRestore) return;
+        
+        $.ajax({
+            url: `/workers/${workerIdToRestore}/restore`,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    window.location.reload();
                 }
-            });
+            },
+            error: function(error) {
+                alert('Failed to restore worker');
+            }
+        });
+    });
+
+    // Close modal when clicking outside
+    $('#restore-worker-modal').on('click', function(e) {
+        if (e.target === this) {
+            $(this).addClass('hidden');
+            workerIdToRestore = null;
         }
     });
 });
