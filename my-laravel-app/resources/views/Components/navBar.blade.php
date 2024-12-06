@@ -27,10 +27,7 @@
                        class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('workers.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
                         Archived Handlers
                     </a>
-                    <a href="{{ route('settings') }}" 
-                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('settings') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
-                        Settings
-                    </a>
+                    
                 </div>
             </div>
             
@@ -38,9 +35,7 @@
                 <span class="text-white">{{ Auth::user()->name }}</span>
                 <form action="{{ route('admin.logout') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="text-white hover:text-gray-300">
-                        Logout
-                    </button>
+                  
                 </form>
             </div>
 

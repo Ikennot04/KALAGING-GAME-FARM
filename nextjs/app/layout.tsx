@@ -42,12 +42,12 @@ export default function RootLayout({
                   <span>DASHBOARD</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/statistic" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-2">
                   <span className="material-icons text-lg">assessment</span>
                   <span>STATISTIC</span>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/aboutus" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center space-x-2">
                   <span className="material-icons text-lg">info</span>
