@@ -32,12 +32,13 @@ export function WorkerCarousel({
                     {workers.length > 1 && (
                         <div className="opacity-70 transition-opacity duration-300 hover:opacity-100">
                             <img
-                                src={`http://127.0.0.1:8000/storage/images/${workers[(currentWorker - 1 + workers.length) % workers.length].image}`}
+                                src={`${process.env.NEXT_PUBLIC_API_URL}/storage/images/${workers[(currentWorker - 1 + workers.length) % workers.length].image}`}
                                 alt={workers[(currentWorker - 1 + workers.length) % workers.length].name}
                                 className="rounded-full shadow-lg w-[150px] h-[150px] object-cover"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.src = '/default-avatar.png';
+                                    console.log('Image failed to load:', workers[(currentWorker - 1 + workers.length) % workers.length].image);
                                 }}
                             />
                             <h3 className="text-sm mt-2 text-center">
@@ -52,12 +53,13 @@ export function WorkerCarousel({
                         onClick={() => onWorkerClick(parseInt(workers[currentWorker].id))}
                     >
                         <img
-                            src={`http://127.0.0.1:8000/storage/images/${workers[currentWorker].image}`}
+                            src={`${process.env.NEXT_PUBLIC_API_URL}/storage/images/${workers[currentWorker].image}`}
                             alt={workers[currentWorker].name}
                             className="rounded-full shadow-lg w-[200px] h-[200px] object-cover"
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = '/default-avatar.png';
+                                console.log('Image failed to load:', workers[currentWorker].image);
                             }}
                         />
                         <h3 className="text-xl font-bold mt-4 text-center text-blue-600">
@@ -69,12 +71,13 @@ export function WorkerCarousel({
                     {workers.length > 1 && (
                         <div className="opacity-70 transition-opacity duration-300 hover:opacity-100">
                             <img
-                                src={`http://127.0.0.1:8000/storage/images/${workers[(currentWorker + 1) % workers.length].image}`}
+                                src={`${process.env.NEXT_PUBLIC_API_URL}/storage/images/${workers[(currentWorker + 1) % workers.length].image}`}
                                 alt={workers[(currentWorker + 1) % workers.length].name}
                                 className="rounded-full shadow-lg w-[150px] h-[150px] object-cover"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.src = '/default-avatar.png';
+                                    console.log('Image failed to load:', workers[(currentWorker + 1) % workers.length].image);
                                 }}
                             />
                             <h3 className="text-sm mt-2 text-center">

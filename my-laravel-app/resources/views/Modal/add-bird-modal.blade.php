@@ -2,7 +2,7 @@
 <div id="addBirdModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex justify-center items-center">
     <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
         <h3 class="text-lg font-semibold mb-4">Add New Bird</h3>
-        <form id="addBirdForm" action="{{ route('birds.add') }}" method="POST" enctype="multipart/form-data">
+        <form id="addBirdForm" enctype="multipart/form-data">
             @csrf
             <div class="mb-4">
                 <label for="breed" class="block text-sm font-medium text-gray-700 mb-2">Breed</label>
@@ -45,13 +45,30 @@
 </div>
 
 <script>
-    function openAddModal() {
-        const modal = document.getElementById('addBirdModal');
-        modal.classList.remove('hidden');
-    }
-
-    function closeAddModal() {
-        const modal = document.getElementById('addBirdModal');
-        modal.classList.add('hidden');
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    const addBirdForm = document.getElementById('addBirdForm');
+    
+    addBirdForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('{{ route('birds.add') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                window.location.href = '{{ route('birds.index') }}';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
 </script>

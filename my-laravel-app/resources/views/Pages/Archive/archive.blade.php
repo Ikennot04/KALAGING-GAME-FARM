@@ -26,7 +26,9 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                         <img src="{{ asset('storage/images/' . $bird->getImage()) }}" 
                              alt="Bird Image" 
-                             class="h-10 w-10 rounded-full object-cover">
+                             class="h-10 w-10 rounded-full object-cover"
+                             onerror="this.onerror=null; this.src='{{ asset('storage/images/default.jpg') }}'"
+                        >
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $bird->getBreed() }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $bird->getOwner() }}</td>
