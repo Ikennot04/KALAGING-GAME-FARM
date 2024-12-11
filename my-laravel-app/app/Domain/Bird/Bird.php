@@ -31,16 +31,16 @@ class Bird
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
     }
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'owner' => $this->owner,
-            'handler' => $this->handler,
-            'image' => $this->image,
-            'breed' => $this->breed,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'id' => $this->getId(),
+            'breed' => $this->getBreed(),
+            'owner' => $this->getOwner(),
+            'handler' => $this->getHandler(),
+            'image' => $this->getImage(),
+            'created_at' => $this->Created(),
+            'updated_at' => $this->Updated()
         ];
     }
     public function getId()

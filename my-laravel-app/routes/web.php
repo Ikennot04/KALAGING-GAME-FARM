@@ -59,3 +59,14 @@ Route::middleware([\App\Http\Middleware\AdminAuthenticate::class])->group(functi
     Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.update.profile');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.update.password');
 }); 
+
+// Temporary debug route
+Route::get('/debug/storage/{filename}', function ($filename) {
+    $path = storage_path('app/public/images/' . $filename);
+    return [
+        'exists' => file_exists($path),
+        'path' => $path,
+        'permissions' => decoct(fileperms($path) & 0777),
+        'readable' => is_readable($path)
+    ];
+});

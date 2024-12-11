@@ -1,6 +1,8 @@
+'use client'
 import Link from 'next/link';
 import './globals.css'; // Assuming you have global styles
 import Image from 'next/image';
+import Search from './Components/Search';
 
 export default function RootLayout({
   children,
@@ -55,19 +57,9 @@ export default function RootLayout({
                 </Link>
               </li>
             </ul>
-            <form className="flex items-center space-x-2">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-              >
-                Search
-              </button>
-            </form>
+            <div className="flex items-center space-x-2">
+              <Search />
+            </div>
           </div>
         </nav>
         
