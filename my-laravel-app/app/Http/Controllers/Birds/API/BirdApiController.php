@@ -136,12 +136,13 @@ public function search(Request $request)
 {
     $searchTerm = $request->query('search', '');
 
-    // Use the repository to perform the search
     $results = $this->registerBird->search($searchTerm);
 
     return response()->json([
         'match' => $results['match'] ? $results['match']->toArray() : null,
-        'related' => $results['related']
+        'related' => array_map(function($bird) {
+            return $bird->toArray();
+        }, $results['related'])
     ]);
 }
 

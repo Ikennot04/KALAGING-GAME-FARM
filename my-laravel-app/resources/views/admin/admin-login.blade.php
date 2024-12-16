@@ -19,7 +19,13 @@
 
             @if(Session::has('error'))
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    {{ Session::get('error') }}
+                    <span class="block sm:inline">Invalid credentials. Please try again.</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">Invalid credentials. Please try again.</span>
                 </div>
             @endif
 
@@ -28,13 +34,13 @@
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
                     <input type="text" name="username" id="username" required 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('username') border-red-500 @enderror">
                 </div>
 
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" name="password" id="password" required 
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('password') border-red-500 @enderror">
                 </div>
 
                 <div>

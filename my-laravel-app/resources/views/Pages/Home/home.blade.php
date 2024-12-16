@@ -10,6 +10,19 @@
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-semibold text-gray-900">Overview Statistics</h2>
         </div>
+        
+        <!-- Color indicators -->
+        <div class="flex justify-center gap-4 mb-4">
+            <div class="flex items-center">
+                <div class="w-4 h-4 rounded bg-blue-500 opacity-50 mr-2"></div>
+                <span class="text-sm text-gray-600">Total Handlers</span>
+            </div>
+            <div class="flex items-center">
+                <div class="w-4 h-4 rounded bg-green-500 opacity-50 mr-2"></div>
+                <span class="text-sm text-gray-600">Total Birds</span>
+            </div>
+        </div>
+        
         <canvas id="statsChart" class="w-full h-64"></canvas>
     </div>
 
@@ -101,14 +114,16 @@
                     label: 'Total Count',
                     data: [{{ $workerCount }}, {{ $birdCount }}],
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.5)',  // Blue color for Handlers
-                        'rgba(16, 185, 129, 0.5)'   // Green color for Birds
+                        'rgba(59, 130, 246, 0.5)',  // Blue for Handlers
+                        'rgba(16, 185, 129, 0.5)'   // Green for Birds
                     ],
                     borderColor: [
-                        'rgba(59, 130, 246, 1)', 
-                        'rgba(16, 185, 129, 1)'
+                        'rgba(59, 130, 246, 1)',    // Solid Blue border
+                        'rgba(16, 185, 129, 1)'     // Solid Green border
                     ],
-                    borderWidth: 1
+                    borderWidth: 1,
+                    barPercentage: 0.6,             // Make bars slightly thinner
+                    categoryPercentage: 0.7         // Add some space between bars
                 }]
             },
             options: {
@@ -119,6 +134,11 @@
                         ticks: {
                             stepSize: 1
                         }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false  // Hide legend since we don't need it
                     }
                 }
             }

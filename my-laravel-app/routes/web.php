@@ -59,3 +59,33 @@ Route::middleware([\App\Http\Middleware\AdminAuthenticate::class])->group(functi
     Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.update.profile');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.update.password');
 }); 
+
+// Temporary debug route
+Route::get('/debug/storage/{filename}', function ($filename) {
+    $path = storage_path('app/public/images/' . $filename);
+    return [
+        'exists' => file_exists($path),
+        'path' => $path,
+        'permissions' => decoct(fileperms($path) & 0777),
+        'readable' => is_readable($path)
+    ];
+});
+
+Route::get('storage/images/{filename}', function ($filename) {
+    $path = storage_path('app/public/images/' . $filename);
+    
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    
+    $file = file_get_contents($path);
+    $type = mime_content_type($path);
+    
+    return response($file)
+        ->header('Content-Type', $type)
+        ->header('Access-Control-Allow-Origin', 'http://localhost:52622')
+        ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept')
+        ->header('Access-Control-Allow-Credentials', 'true')
+        ->header('Vary', 'Origin');
+});

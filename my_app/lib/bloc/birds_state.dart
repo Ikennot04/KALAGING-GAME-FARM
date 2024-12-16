@@ -1,31 +1,17 @@
-import 'package:equatable/equatable.dart';
-import 'package:my_app/models/bird_model.dart'; // Make sure to import your Bird model here.
+abstract class BirdState {}
 
-abstract class BirdState extends Equatable {
-  const BirdState();
+class BirdInitialState extends BirdState {}
 
-  @override
-  List<Object> get props => [];
+class BirdLoadingState extends BirdState {}
+
+class BirdLoadedState extends BirdState {
+  final List<dynamic> birds;
+
+  BirdLoadedState(this.birds);
 }
 
-class BirdInitial extends BirdState {}
+class BirdErrorState extends BirdState {
+  final String error;
 
-class BirdLoading extends BirdState {}
-
-class BirdLoaded extends BirdState {
-  final List<Bird> birds;
-
-  const BirdLoaded({required this.birds});
-
-  @override
-  List<Object> get props => [birds];
-}
-
-class BirdError extends BirdState {
-  final String message;
-
-  const BirdError({required this.message});
-
-  @override
-  List<Object> get props => [message];
+  BirdErrorState(this.error);
 }

@@ -69,22 +69,29 @@ class EloquentBirdRepository implements BirdRepository
     }
     public function searchBird(string $search): array
     {
-        $match = BirdModel::where('id', $search)
-            ->orWhere('breed', $search)
-            ->orWhere('owner', $search)
-            ->orWhere('handler', $search)
+        // First try exact match
+        $match = BirdModel::where('deleted', 0)
+            ->where(function($query) use ($search) {
+                $query->where('id', $search)
+                      ->orWhere('breed', 'LIKE', $search)
+                      ->orWhere('owner', 'LIKE', $search)
+                      ->orWhere('handler', 'LIKE', $search);
+            })
             ->first();
 
-        $related = BirdModel::where(function($query) use ($search) {
-            $query->where('id', 'LIKE', "%{$search}%")
-                  ->orWhere('breed', 'LIKE', "%{$search}%")
-                  ->orWhere('owner', 'LIKE', "%{$search}%")
-                  ->orWhere('handler', 'LIKE', "%{$search}%");
-        })
-        ->when($match, function($query) use ($match) {
-            return $query->where('id', '!=', $match->id);
-        })
-        ->get();
+        // Then get related results
+        $related = BirdModel::where('deleted', 0)
+            ->where(function($query) use ($search) {
+                $query->where('id', 'LIKE', "%{$search}%")
+                      ->orWhere('breed', 'LIKE', "%{$search}%")
+                      ->orWhere('owner', 'LIKE', "%{$search}%")
+                      ->orWhere('handler', 'LIKE', "%{$search}%");
+            })
+            ->when($match, function($query) use ($match) {
+                return $query->where('id', '!=', $match->id);
+            })
+            ->limit(5)
+            ->get();
 
         return [
             'match' => $match ? $this->createBirdFromModel($match) : null,
