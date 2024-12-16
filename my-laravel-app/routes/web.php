@@ -70,3 +70,22 @@ Route::get('/debug/storage/{filename}', function ($filename) {
         'readable' => is_readable($path)
     ];
 });
+
+Route::get('storage/images/{filename}', function ($filename) {
+    $path = storage_path('app/public/images/' . $filename);
+    
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    
+    $file = file_get_contents($path);
+    $type = mime_content_type($path);
+    
+    return response($file)
+        ->header('Content-Type', $type)
+        ->header('Access-Control-Allow-Origin', 'http://localhost:52622')
+        ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept')
+        ->header('Access-Control-Allow-Credentials', 'true')
+        ->header('Vary', 'Origin');
+});

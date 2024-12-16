@@ -1,104 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_app/bloc/birds_bloc.dart';
-import 'package:my_app/bloc/birds_event.dart';
-import 'package:my_app/bloc/birds_state.dart';
-import 'package:my_app/repositories/bird_repository.dart';
+import 'bloc/birds_bloc.dart';
+import 'pages/bird/bird.dart';
+import 'widgets/drawer/drawer_widget.dart';
+import 'pages/dashboard/dashboard.dart';
+import 'pages/workers/worker.dart';
+import 'bloc/dashboard_bloc.dart';
+import 'repositories/dashboard_repository.dart';
 
 void main() {
-  runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => BirdBloc(
-            repository: BirdRepository(),
-          )..add(LoadBirds()),
-        ),
-      ],
-      child: MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Sidebar Navigation',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: BirdScreen(),
+      home: const MyHomePage(),
     );
   }
 }
 
-class BirdScreen extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+  @override
+  MyHomePageState createState() => MyHomePageState();
+}
+
+class MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
+
+  // Removed const here since we're using non-const constructors for the pages
+  final List<Widget> _pages = <Widget>[
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => DashboardBloc(
+            repository: DashboardRepository(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => BirdBloc(),
+        ),
+      ],
+      child: DashboardPage(),
+    ),
+    BlocProvider(
+      create: (context) => BirdBloc(),
+      child: BirdsPage(),
+    ),
+    WorkersPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Birds'),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<BirdBloc, BirdState>(
-        builder: (context, state) {
-          if (state is BirdLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is BirdError) {
-            return Center(child: Text(state.message));
-          } else if (state is BirdLoaded) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                itemCount: state.birds.length,
-                itemBuilder: (context, index) {
-                  final bird = state.birds[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    elevation: 4,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16.0),
-                      title: Text(
-                        bird.breed,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Owner: ${bird.owner}'),
-                          Text('Handler: ${bird.handler}'),
-                        ],
-                      ),
-                      leading: ClipOval(
-                        child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: FadeInImage.assetNetwork(
-                            placeholder: 'assets/placeholder.png',
-                            image: 'http://localhost:8000/storage/images/${bird.image}',
-                            fit: BoxFit.cover,
-                            imageErrorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[200],
-                                child: Icon(Icons.broken_image, color: Colors.grey[400]),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-          return Center(child: Text('Something went wrong'));
-        },
+      appBar: AppBar(),
+      drawer: DrawerWidget(onItemTapped: _onItemTapped),
+      body: Center(
+        child: _pages.elementAt(_selectedIndex),
       ),
     );
   }
 }
-
-
