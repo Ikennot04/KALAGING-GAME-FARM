@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-semibold text-gray-800 text-center mb-4">Workers Management</h1>
+    <h1 class="text-3xl font-semibold text-gray-800 text-center mb-4">Handlers Management</h1>
     
     <div class="flex justify-between items-center mb-6">
         <div class="w-1/3">

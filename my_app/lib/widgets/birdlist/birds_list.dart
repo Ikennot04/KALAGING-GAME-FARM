@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/birds_bloc.dart';
 import '../../bloc/birds_state.dart';
+import 'dart:html' as html;
 
 
 class BirdsList extends StatelessWidget {
@@ -10,36 +11,71 @@ class BirdsList extends StatelessWidget {
   Widget _buildImage(String imageUrl, String handler) {
     return Stack(
       children: [
-        // Full-size image
+        // Image container
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
               image: NetworkImage(imageUrl),
-              fit: BoxFit.cover, // Cover full area with no white spaces
+              fit: BoxFit.cover,
             ),
           ),
-          height: 200, // Set a fixed height for full-sized image
-          width: double.infinity, // Make the image stretch full width
+          height: 220,
+          width: double.infinity,
         ),
-        // Handler overlay at the bottom
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            color: Colors.black.withOpacity(0.6), // Semi-transparent overlay
-            child: Text(
-              'Handler: $handler',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+        // Gradient overlay
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.7),
+                ],
+                stops: const [0.6, 1.0],
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
+          ),
+        ),
+        // Handler info
+        Positioned(
+          bottom: 12,
+          left: 12,
+          right: 12,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'Handler: $handler',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(0, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.email, color: Colors.white),
+                onPressed: () {
+                  final mailtoUrl = 'mailto:$handler@gmail.com?subject=Bird%20Inquiry';
+                  html.window.open(mailtoUrl, '_blank');
+                },
+                tooltip: 'Contact Handler',
+              ),
+            ],
           ),
         ),
       ],
