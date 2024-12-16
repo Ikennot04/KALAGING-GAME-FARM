@@ -1,49 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/workers_bloc.dart';
+import '../../bloc/workers_event.dart';
 import '../../bloc/workers_state.dart';
+import '../../models/worker_model.dart';
 
 class WorkersList extends StatelessWidget {
   static const String baseUrl = 'http://127.0.0.1:8000/storage/images/';
 
-  // Builds image with a gradient overlay to improve text readability
+  final TextEditingController _searchController = TextEditingController();
+
+  Widget _buildSearchBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search workers...',
+          prefixIcon: Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.blue.shade200),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: (value) {
+          context.read<WorkerBloc>().add(SearchWorkersEvent(value));
+        },
+      ),
+    );
+  }
+
   Widget _buildImage(String imageUrl, String position) {
     return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
               image: NetworkImage(imageUrl),
               fit: BoxFit.cover,
             ),
           ),
-          height: 250,
+          height: 220,
           width: double.infinity,
         ),
         Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black.withOpacity(0.6), Colors.black.withOpacity(0)],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-            ),
-            child: Text(
-              'Position: $position',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          bottom: 12,
+          left: 12,
+          right: 12,
+          child: Text(
+            position,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -55,46 +67,66 @@ class WorkersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WorkerBloc, WorkerState>(
       builder: (context, state) {
-        if (state is WorkerLoading) {
+        if (state is WorkerLoadingState) {
           return Center(child: CircularProgressIndicator());
-        } else if (state is WorkerLoaded) {
-          return _buildWorkerList(context, state.workers);
-        } else if (state is WorkerError) {
-          return Center(child: Text('Error: ${state.message}'));
+        } else if (state is WorkerLoadedState) {
+          return Column(
+            children: [
+              _buildSearchBar(context),
+              Expanded(
+                child: _buildWorkerList(context, state.workers),
+              ),
+            ],
+          );
+        } else if (state is WorkerErrorState) {
+          return Center(
+            child: Text(
+              'Error: ${state.error}',
+              style: TextStyle(color: Colors.red),
+            ),
+          );
         }
-        return Center(child: Text('No data available.'));
+        return Center(child: Text('No data available'));
       },
     );
   }
 
-  // Builds the worker list with cards that are more interactive and stylish
   Widget _buildWorkerList(BuildContext context, List<dynamic> workers) {
     return ListView.builder(
       itemCount: workers.length,
       itemBuilder: (context, index) {
-        final worker = workers[index];
-        final imageUrl = worker.image.isNotEmpty
+        final dynamic workerData = workers[index];
+        final Worker worker = workerData is Worker 
+            ? workerData 
+            : Worker.fromJson(workerData as Map<String, dynamic>);
+
+        final imageUrl = worker.image.isNotEmpty 
             ? '$baseUrl${worker.image}'
             : '${baseUrl}default.jpg';
 
-        return GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/worker-details',
-              arguments: {'workerId': worker.id},
-            );
-          },
-          child: Hero(
-            tag: 'worker-${worker.id}',
-            child: Card(
-              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              elevation: 6,
-              clipBehavior: Clip.antiAlias,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: _buildImage(imageUrl, worker.position),
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/worker-details',
+                arguments: {'workerId': worker.id},
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildImage(imageUrl, worker.position),
+                SizedBox(height: 8),
+                Text(
+                  worker.name,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
         );
