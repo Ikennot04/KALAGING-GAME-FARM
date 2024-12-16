@@ -41,7 +41,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.people),
-            title: Text('Workers'),
+            title: Text('Handlers'),
             onTap: () {
               onItemTapped(2);
               Navigator.pop(context);

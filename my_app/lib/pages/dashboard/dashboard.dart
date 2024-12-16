@@ -49,7 +49,7 @@ class _DashboardPageState extends State<DashboardPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dashboard Overview',
+              'Dashboard ',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,

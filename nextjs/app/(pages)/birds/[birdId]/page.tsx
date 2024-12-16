@@ -117,11 +117,33 @@ export default function BirdDetails({
                                     {new Date(bird.created_at).toLocaleDateString()}
                                 </span>
                             </div>
-                            <div className="flex items-center">
-                                <span className="font-bold text-gray-700 w-32">Weight:</span>
-                                <span className="text-gray-600">{bird.weight || 'Not available'}</span>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-gray-50 rounded-lg shadow-md">
+                                <div className="sm:w-32 mb-2 sm:mb-0">
+                                    <span className="font-semibold text-gray-700 text-lg">Interested?</span>
+                                </div>
+
+                                
+                                <div className="flex-1 text-gray-600 leading-relaxed mb-2 sm:mb-0">
+                                    <p className="text-gray-700">
+                                        Picture the details of the bird and contact the handler below:
+                                    </p>
+                                </div>
+
+                                
+                                
                             </div>
+                            <div>
+                                    <a 
+                                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${bird.handler}@gmail.com`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-block text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300"
+                                    >
+                                        Email {bird.handler}@gmail.com
+                                    </a>
+                                </div>
                         </div>
+                        
                     </div>
 
                     {/* Fighting Details */}
