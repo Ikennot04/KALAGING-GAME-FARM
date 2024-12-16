@@ -7,7 +7,10 @@ import 'pages/dashboard/dashboard.dart';
 import 'pages/workers/worker.dart';
 import 'bloc/dashboard_bloc.dart';
 import 'repositories/dashboard_repository.dart';
+import 'repositories/worker_repository.dart';
 import 'routes/app_routes.dart';
+import 'bloc/workers_bloc.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -17,14 +20,28 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sidebar Navigation',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    final dashboardRepository = DashboardRepository();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<BirdBloc>(
+          create: (context) => BirdBloc(),
+        ),
+        BlocProvider<DashboardBloc>(
+          create: (context) => DashboardBloc(repository: dashboardRepository),
+        ),
+        BlocProvider<WorkerBloc>(
+          create: (context) => WorkerBloc(WorkerRepository()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Sidebar Navigation',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const MyHomePage(),
+        routes: AppRoutes.routes,
       ),
-      home: const MyHomePage(),
-      routes: AppRoutes.routes,
     );
   }
 }
