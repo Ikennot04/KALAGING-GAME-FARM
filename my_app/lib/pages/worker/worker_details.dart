@@ -26,14 +26,14 @@ class _WorkerDetailsPageState extends State<WorkerDetailsPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<WorkerBloc, WorkerState>(
       builder: (context, state) {
-        if (state is WorkerLoading) {
+        if (state is WorkerLoadingState) {
           return Scaffold(
-            appBar: AppBar(title: Text('Worker Details')),
+            appBar: AppBar(title: Text('Handler Details')),
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        if (state is WorkerLoaded) {
+        if (state is WorkerLoadedState) {
           final worker = state.workers.firstWhere(
             (w) => w.id == widget.workerId,
             orElse: () => Worker(id: -1, name: '', position: '', image: ''),

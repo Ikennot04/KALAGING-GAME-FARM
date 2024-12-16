@@ -67,6 +67,58 @@ class BirdBloc extends Bloc<BirdEvent, BirdState> {
         emit(BirdErrorState('Unexpected error: ${e.toString()}'));
       }
     });
+
+    on<SearchBirdsEvent>((event, emit) async {
+      if (event.query.isEmpty) {
+        try {
+          final response = await client
+              .get(Uri.parse('$baseUrl/birds'))
+              .timeout(timeout);
+
+          if (response.statusCode == 200) {
+            final decoded = json.decode(response.body);
+            if (decoded is Map && decoded.containsKey('birds')) {
+              final birds = decoded['birds'] as List;
+              emit(BirdLoadedState(birds));
+            }
+          }
+        } catch (e) {
+          developer.log('Error fetching birds', name: 'BirdBloc', error: e);
+        }
+        return;
+      }
+
+      if (event.query.length < 2) {
+        return;
+      }
+
+      try {
+        developer.log('Searching birds...', name: 'BirdBloc');
+        final response = await client
+            .get(Uri.parse('$baseUrl/birds/search?search=${Uri.encodeComponent(event.query)}&type=text'))
+            .timeout(timeout);
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          developer.log('Search response: $data', name: 'BirdBloc');
+          
+          List<dynamic> searchResults = [];
+          
+          if (data['match'] != null) {
+            searchResults.add(data['match']);
+          }
+          if (data['related'] != null && data['related'].isNotEmpty) {
+            searchResults.addAll(data['related']);
+          }
+          
+          emit(BirdLoadedState(searchResults));
+        } else {
+          emit(BirdErrorState('Search failed: ${response.statusCode}'));
+        }
+      } catch (e) {
+        emit(BirdErrorState('Search failed: ${e.toString()}'));
+      }
+    });
   }
 
   @override
