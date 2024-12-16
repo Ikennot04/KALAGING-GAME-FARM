@@ -7,6 +7,7 @@ import 'pages/dashboard/dashboard.dart';
 import 'pages/workers/worker.dart';
 import 'bloc/dashboard_bloc.dart';
 import 'repositories/dashboard_repository.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(),
+      routes: AppRoutes.routes,
     );
   }
 }
