@@ -2,11 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/birds_bloc.dart';
 import '../../bloc/birds_state.dart';
+import '../../bloc/birds_event.dart';
 import 'dart:html' as html;
 
 
 class BirdsList extends StatelessWidget {
   static const String baseUrl = 'http://127.0.0.1:8000/storage/images/';
+  final TextEditingController _searchController = TextEditingController();
+
+  Widget _buildSearchBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search birds...',
+          prefixIcon: Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.blue.shade200),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: (value) {
+          context.read<BirdBloc>().add(SearchBirdsEvent(value));
+        },
+      ),
+    );
+  }
 
   Widget _buildImage(String imageUrl, String handler) {
     return Stack(
@@ -89,8 +113,14 @@ class BirdsList extends StatelessWidget {
         if (state is BirdLoadingState) {
           return Center(child: CircularProgressIndicator());
         } else if (state is BirdLoadedState) {
-          final birds = state.birds;
-          return _buildBirdList(context, birds);
+          return Column(
+            children: [
+              _buildSearchBar(context),
+              Expanded(
+                child: _buildBirdList(context, state.birds),
+              ),
+            ],
+          );
         } else if (state is BirdErrorState) {
           return Center(
             child: Text(

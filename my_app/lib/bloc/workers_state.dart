@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import '../models/worker_model.dart';
 
 abstract class WorkerState extends Equatable {
   const WorkerState();
@@ -8,24 +7,24 @@ abstract class WorkerState extends Equatable {
   List<Object?> get props => [];
 }
 
-class WorkerInitial extends WorkerState {}
+class WorkerInitialState extends WorkerState {}
 
-class WorkerLoading extends WorkerState {}
+class WorkerLoadingState extends WorkerState {}
 
-class WorkerLoaded extends WorkerState {
-  final List<Worker> workers;
+class WorkerLoadedState extends WorkerState {
+  final List<dynamic> workers;
 
-  const WorkerLoaded(this.workers);
+  const WorkerLoadedState(this.workers);
 
   @override
   List<Object?> get props => [workers];
 }
 
-class WorkerError extends WorkerState {
-  final String message;
+class WorkerErrorState extends WorkerState {
+  final String error;
 
-  const WorkerError(this.message);
+  const WorkerErrorState(this.error);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [error];
 }
