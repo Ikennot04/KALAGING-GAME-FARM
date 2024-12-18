@@ -40,6 +40,8 @@ dependencies:
   flutter_carousel_widget: ^2.2.0
   carousel_slider: ^4.2.1
   url_launcher: ^6.2.5
+  flutter_feather_icons: ^2.0.0
+  intl: ^0.18.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -59,8 +61,8 @@ dev_dependencies:
 
 flutter:
   assets:
-    - assets/
-   
+    - assets/images/
+    - assets/images/chicken.jpg
 
   
   uses-material-design: true

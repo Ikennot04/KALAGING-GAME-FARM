@@ -7,7 +7,10 @@ use App\Application\Worker\RegisterWorker;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
-
+use App\Infrastructure\Bird\BirdModel;
+use App\Infrastructure\Worker\WorkerModel;
+use App\Infrastructure\Bird\Bird;
+use App\Infrastructure\Worker\Worker;
 class DashboardWebController extends Controller
 {
     private $registerBird;
@@ -23,7 +26,8 @@ class DashboardWebController extends Controller
         $birdCount = $this->getBirdCount();
         $workerCount = $this->getWorkerCount();
         $handlerStats = $this->registerWorker->getHandlerStats();
-        return view('Pages.Home.home', ['birdCount' => $birdCount, 'workerCount' => $workerCount, 'handlerStats' => $handlerStats]);
+        
+        return view('Pages.Home.home', compact('handlerStats', 'workerCount', 'birdCount'));
     }
 
     public function getBirdCount(): int
