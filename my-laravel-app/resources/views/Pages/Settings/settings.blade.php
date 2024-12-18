@@ -72,27 +72,7 @@
             </form>
         </div>
 
-        <!-- Session Management Card -->
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Session Management</h2>
-
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Last activity: 
-                            {{ Session::has('last_activity') ? \Carbon\Carbon::createFromTimestamp(Session::get('last_activity'))->diffForHumans() : 'N/A' }}
-                        </p>
-                    </div>
-                    <form action="{{ route('admin.logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
+        
     </div>
 </div>
 @endsection

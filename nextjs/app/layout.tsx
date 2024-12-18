@@ -1,20 +1,36 @@
 'use client'
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import './globals.css'; // Assuming you have global styles
 import Image from 'next/image';
 import Search from './Components/Search';
+import IntroVideo from './Components/IntroVideo';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [hasVisited, setHasVisited] = useState(false);
+
+  useEffect(() => {
+    // Check if user has visited before
+    const visited = localStorage.getItem('hasVisited');
+    setHasVisited(!!visited);
+    
+    // Set visited flag
+    if (!visited) {
+      localStorage.setItem('hasVisited', 'true');
+    }
+  }, []);
+
   return (
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       </head>
       <body className="moving-background bg-gradient-to-r from-blue-400 to-blue-600">
+        {!hasVisited && <IntroVideo />}
         <header className="bg-white shadow-md p-4 flex items-center justify-center">
           <h1 className="text-4xl font-extrabold text-blue-600 mr-4">
             KALAGING GAMEFARM

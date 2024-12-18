@@ -10,6 +10,11 @@ class BirdCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> carouselItems = birds.map((bird) => CarouselItem(
+          bird: bird,
+          baseUrl: baseUrl,
+        )).toList();
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20),
       child: Column(
@@ -27,15 +32,12 @@ class BirdCarousel extends StatelessWidget {
             ),
           ),
           FlutterCarousel(
-            items: birds.map((bird) => CarouselItem(
-              bird: bird,
-              baseUrl: baseUrl,
-            )).toList(),
+            items: carouselItems,
             options: CarouselOptions(
-              height: 200.0,
+              height: 300.0,
               showIndicator: true,
               enableInfiniteScroll: true,
-              autoPlay: true,
+              autoPlay: false,
               viewportFraction: 0.8,
               enlargeCenterPage: true,
             ),

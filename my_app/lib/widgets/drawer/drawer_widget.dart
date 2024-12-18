@@ -16,7 +16,7 @@ class DrawerWidget extends StatelessWidget {
               color: Colors.blue,
             ),
             child: Text(
-              'Menu',
+              'KALAGING GAME FARM',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -32,7 +32,7 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.pets),
+            leading: Icon(Icons.flutter_dash),
             title: Text('Birds'),
             onTap: () {
               onItemTapped(1);

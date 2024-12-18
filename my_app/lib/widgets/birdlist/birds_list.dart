@@ -32,7 +32,7 @@ class BirdsList extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(String imageUrl, String handler) {
+  Widget _buildImage(String imageUrl, String handler, String breed) {
     return Stack(
       children: [
         // Image container
@@ -74,7 +74,7 @@ class BirdsList extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Handler: $handler',
+                  'Handler: $handler • Breed: $breed',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -142,6 +142,7 @@ class BirdsList extends StatelessWidget {
         final bird = birds[index];
         final imageUrl = '$baseUrl${bird['image']}';
         final handler = bird['handler'];
+        final breed = bird['breed'];
 
         return GestureDetector(
           onTap: () {
@@ -160,7 +161,7 @@ class BirdsList extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: _buildImage(imageUrl, handler),
+              child: _buildImage(imageUrl, handler, breed),
             ),
           ),
         );
