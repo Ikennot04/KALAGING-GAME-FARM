@@ -130,16 +130,26 @@ class EloquentWorkerRepository implements WorkerRepository
         $stats = [];
 
         foreach ($workers as $worker) {
-            $birdCount = BirdModel::where('handler', $worker->name)
+            $birds = BirdModel::where('handler', $worker->name)
                 ->where('deleted', 0)
-                ->count();
-                
+                ->get()
+                ->map(function($bird) {
+                    return [
+                        'name' => $bird->breed,
+                        'breed' => $bird->breed,
+                        'owner' => $bird->owner,
+                        'handler' => $bird->handler,
+                        'image' => $bird->image
+                    ];
+                });
+
             $stats[] = [
                 'id' => $worker->id,
                 'name' => $worker->name,
                 'position' => $worker->position,
                 'image' => $worker->image,
-                'bird_count' => $birdCount
+                'bird_count' => $birds->count(),
+                'birds' => $birds
             ];
         }
 

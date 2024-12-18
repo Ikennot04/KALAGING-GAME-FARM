@@ -10,54 +10,11 @@
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-semibold text-gray-900">Overview Statistics</h2>
         </div>
-        
-        <!-- Color indicators -->
-        <div class="flex justify-center gap-4 mb-4">
-            <div class="flex items-center">
-                <div class="w-4 h-4 rounded bg-blue-500 opacity-50 mr-2"></div>
-                <span class="text-sm text-gray-600">Total Handlers</span>
-            </div>
-            <div class="flex items-center">
-                <div class="w-4 h-4 rounded bg-green-500 opacity-50 mr-2"></div>
-                <span class="text-sm text-gray-600">Total Birds</span>
-            </div>
-        </div>
-        
+        <!-- Overview Chart -->
         <canvas id="statsChart" class="w-full h-64"></canvas>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <!-- Handlers Management Section -->
-        <a href="{{ route('workers.index') }}" class="transform hover:scale-105 transition-transform duration-200">
-            <div class="bg-white rounded-lg shadow-md hover:shadow-lg p-6">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Handlers Management</h2>
-                <div class="flex justify-between items-center">
-                    <p class="text-gray-600">Total Handlers: {{ $workerCount }}</p>
-                    <span class="text-blue-500">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </span>
-                </div>
-            </div>
-        </a>
-        
-        <!-- Birds Management Section -->
-        <a href="{{ route('birds.index') }}" class="transform hover:scale-105 transition-transform duration-200">
-            <div class="bg-white rounded-lg shadow-md hover:shadow-lg p-6">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Birds Management</h2>
-                <div class="flex justify-between items-center">
-                    <p class="text-gray-600">Total Birds: {{ $birdCount }}</p>
-                    <span class="text-blue-500">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </span>
-                </div>
-            </div>
-        </a>
-    </div>
-
+    <!-- Handler Statistics Table -->
     @if(isset($handlerStats) && count($handlerStats) > 0)
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-semibold text-gray-900 mb-4">Handler Statistics</h2>
@@ -73,6 +30,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @foreach($handlerStats as $stat)
                     <tr>
+                        <!-- Handler Info -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <img src="{{ asset('storage/images/' . $stat['image']) }}" 
@@ -84,10 +42,35 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $stat['position'] }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+
+                        <!-- Birds Handled with Hover Modal -->
+                        <td class="px-6 py-4 whitespace-nowrap relative group">
+                            <!-- Birds Handled Count -->
                             <span class="px-2 py-1 text-sm rounded-full {{ $stat['bird_count'] > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600' }}">
                                 {{ $stat['bird_count'] }} birds
                             </span>
+
+                            <!-- Hover Modal -->
+                            @if($stat['bird_count'] > 0)
+                            <div class="absolute z-50 top-[90%] left-0 -mt-2 w-96 bg-white p-4 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                                <h3 class="font-semibold text-gray-900 mb-3">Birds Handled by {{ $stat['name'] }}</h3>
+                                <div class="max-h-60 overflow-y-auto">
+                                    @foreach($stat['birds'] as $bird)
+                                        <div class="flex items-center space-x-3 mb-2 p-2 hover:bg-gray-50 rounded">
+                                            <img src="{{ asset('storage/images/' . $bird['image']) }}" 
+                                                alt="{{ $bird['breed'] }}" 
+                                                class="h-10 w-10 rounded-full object-cover"
+                                                onerror="this.onerror=null; this.src='{{ asset('storage/images/default.jpg') }}'">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $bird['breed'] }}</div>
+                                                <div class="text-xs text-gray-500">Owner: {{ $bird['owner'] }}</div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
                         </td>
                     </tr>
                     @endforeach
@@ -101,8 +84,6 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('statsChart').getContext('2d');
@@ -113,34 +94,17 @@
                 datasets: [{
                     label: 'Total Count',
                     data: [{{ $workerCount }}, {{ $birdCount }}],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.5)',  // Blue for Handlers
-                        'rgba(16, 185, 129, 0.5)'   // Green for Birds
-                    ],
-                    borderColor: [
-                        'rgba(59, 130, 246, 1)',    // Solid Blue border
-                        'rgba(16, 185, 129, 1)'     // Solid Green border
-                    ],
-                    borderWidth: 1,
-                    barPercentage: 0.6,             // Make bars slightly thinner
-                    categoryPercentage: 0.7         // Add some space between bars
+                    backgroundColor: ['rgba(59, 130, 246, 0.5)', 'rgba(16, 185, 129, 0.5)'],
+                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
                 },
-                plugins: {
-                    legend: {
-                        display: false  // Hide legend since we don't need it
-                    }
-                }
+                plugins: { legend: { display: false } }
             }
         });
     });
