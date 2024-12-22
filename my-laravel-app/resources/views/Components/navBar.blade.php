@@ -27,6 +27,11 @@
                        class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('workers.archive') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
                         Archived Handlers
                     </a>
+                    <a href="{{ route('admin.accounts') }}" 
+                       class="nav-link px-4 py-2 rounded-md text-sm font-medium text-white {{ request()->routeIs('admin.accounts') ? 'bg-gray-600' : 'hover:bg-gray-600' }} transition duration-300">
+                        Account Management
+                    </a>
+
                     
                 </div>
             </div>
