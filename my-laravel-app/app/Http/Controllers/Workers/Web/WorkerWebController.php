@@ -7,6 +7,7 @@ use App\Application\Worker\RegisterWorker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class WorkerWebController extends Controller
 {
@@ -164,10 +165,28 @@ public function findAll(): array
     public function softDeleteWorker($id)
     {
         try {
-            $this->registerWorker->softDelete($id);
-            return response()->json(['success' => true]);
+            $worker = WorkerModel::findOrFail($id);
+            
+            // Begin transaction
+            DB::beginTransaction();
+            
+            try {
+                // Soft delete the worker
+                $worker->update(['deleted' => 1]);
+                
+                // If there's an associated user, soft delete them too
+                if ($worker->user) {
+                    $worker->user->update(['deleted' => 1]);
+                }
+                
+                DB::commit();
+                return response()->json(['success' => true]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete worker'], 500);
+            return response()->json(['error' => 'Failed to delete worker: ' . $e->getMessage()], 500);
         }
     }
 
@@ -191,5 +210,11 @@ public function findAll(): array
     {
         $handlerStats = $this->registerWorker->getHandlerStats();
         return view('Pages.Worker.handler-stats', ['stats' => $handlerStats]);
+    }
+
+    public function index()
+    {
+        $workers = $this->registerWorker->findAll();
+        return view('Pages.Worker.worker', compact('workers'));
     }
 }

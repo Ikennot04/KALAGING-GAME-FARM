@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use App\Application\Admin\RegisterAdmin;
+use App\Application\Enums\UserRole;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Models\WorkerModel;
 
 class LoginApiController extends Controller
 {
@@ -17,33 +21,51 @@ class LoginApiController extends Controller
         $this->registerAdmin = $registerAdmin;
     }
 
-    public function register(Request $request): JsonResponse
+   
+    public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'username' => 'required|unique:users',
-            'password' => 'required',
-            'c_password' => 'required|same:password',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
         try {
+            if ($request->input('role_id') == UserRole::ADMIN && 
+                (!Auth::check() || Auth::user()->role_id !== UserRole::ADMIN)) {
+                return response()->json(['error' => 'Unauthorized to create admin users'], 403);
+            }
+
             $input = $request->all();
-            $admin = $this->registerAdmin->create(
+            $imageName = 'default-profile.jpg';
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . preg_replace('/[^A-Za-z0-9\-\.]/', '', $image->getClientOriginalName());
+                Storage::disk('public')->putFileAs('images', $image, $imageName);
+            }
+
+            [$admin, $token] = $this->registerAdmin->create(
                 $input['name'],
                 $input['username'],
-                $input['password']
+                $input['password'],
+                $input['role_id'],
+                $imageName
             );
 
+            if ($input['role_id'] == UserRole::HANDLER) {
+                $worker = new WorkerModel();
+                $worker->setName($input['name']);
+                $worker->setPosition('Handler');
+                $worker->setImage($imageName);
+                $worker->setUserId($admin->getId());
+                $worker->save();
+            }
+
             return response()->json([
-                'message' => 'Admin successfully registered',
+                'message' => 'User successfully registered',
                 'admin' => $admin->toArray(),
-                'token' => $admin->getApiToken(),
+                'token' => $token,
                 'token_type' => 'Bearer'
             ], 201);
         } catch (\Exception $e) {
+            if (isset($imageName) && $imageName !== 'default-profile.jpg') {
+                Storage::disk('public')->delete('images/' . $imageName);
+            }
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
@@ -51,11 +73,11 @@ class LoginApiController extends Controller
     public function login(Request $request): JsonResponse
     {
         try {
-            $admin = $this->registerAdmin->login($request->username, $request->password);
+            [$admin, $token] = $this->registerAdmin->login($request->username, $request->password);
             
             return response()->json([
                 'status' => 'success',
-                'token' => $admin->getApiToken(),
+                'token' => $token,
                 'user' => $admin->toArray()
             ]);
         } catch (\Exception $e) {
