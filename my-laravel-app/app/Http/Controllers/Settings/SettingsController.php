@@ -16,16 +16,6 @@ class SettingsController extends Controller
     public function __construct(RegisterAdmin $registerAdmin)
     {
         $this->registerAdmin = $registerAdmin;
-        
-        // Check authentication for all methods in this controller
-        if (!Auth::check() || !Session::has('admin_id')) {
-            Auth::logout();
-            Session::flush();
-            return redirect()->route('admin.login')
-                ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
-        }
     }
 
     public function show()
@@ -89,7 +79,8 @@ class SettingsController extends Controller
         if (!Auth::check() || !Session::has('admin_id')) {
             Auth::logout();
             Session::flush();
-            return redirect()->route('admin.login');
+            return redirect()->route('admin.login')->with('error', 'Please login to continue');
         }
+        return null;
     }
 } 

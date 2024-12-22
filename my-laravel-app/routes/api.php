@@ -29,3 +29,9 @@ Route::get('/workers/{id}', [WorkerApiController::class, 'getWorkerById']);
 
 Route::post('/register', [LoginApiController::class, 'register']);
 Route::post('/login', [LoginApiController::class, 'login']);
+
+
+
+Route::middleware(['auth:sanctum', 'check.role:1,2'])->group(function () {
+    // Handler and Admin routes
+});
